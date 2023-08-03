@@ -42,6 +42,9 @@ class BaseConfig(BaseSettings):
     SELENIUM_PORT: int = 4444
     SELENIUM_REMOTE_DRIVER_URL: str = "http://127.0.0.1:4444/wd/hub"
     SELENIUM_SESSION_FIND_TIMEOUT: int = 10
+    SELENIUM_VNC_PASSWORD: str
+    SELENIUM_VNC_AUTO_CONNECT: int
+    SELENIUM_VNC_RESIZE: str
 
     @staticmethod
     def configure(app: Flask):

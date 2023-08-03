@@ -39,7 +39,7 @@ services:
     ports:
       - 127.0.0.1:${SELENIUM_PORT:-4444}:4444
       # - 127.0.0.1:5900:5900  # Video Stream
-      # http://localhost:7900/?autoconnect=1&resize=scale&password=secret
+      # http://localhost:7900/?autoconnect=1&resize=scale&password=pass
       - 127.0.0.1:${SELENIUM_VNC_PORT:-7900}:7900 # VNC server
     environment:
       HUB_QUIET_TIMEOUT: 180000
@@ -47,6 +47,7 @@ services:
       HUB_POLLING_TIMEOUT: 180000
       SE_NODE_SESSION_TIMEOUT: 180000
       ENABLE_AUTOMATION: 1
+      SE_VNC_PASSWORD: ${SELENIUM_VNC_PASSWORD:-pass}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.chrome.rule=Host(`browser.localhost`)"
