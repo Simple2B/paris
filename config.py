@@ -41,6 +41,7 @@ class BaseConfig(BaseSettings):
     # Selenium
     SELENIUM_PORT: int = 4444
     SELENIUM_REMOTE_DRIVER_URL: str = "http://127.0.0.1:4444/wd/hub"
+    SELENIUM_SESSION_FIND_TIMEOUT: int = 10
 
     @staticmethod
     def configure(app: Flask):
