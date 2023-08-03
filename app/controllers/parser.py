@@ -5,7 +5,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import (
+    TimeoutException,
+    ElementClickInterceptedException,
+)
+from selenium.webdriver.common.action_chains import ActionChains
 
 from app.logger import log
 from flask import current_app as app
@@ -26,14 +30,14 @@ def sign_in(browser: WebDriver, wait: WebDriverWait):
     password_input.send_keys(app.config["TTP_PASSWORD"])
 
     login_button = browser.find_element(By.ID, "log_to_b2b")
-    login_button.click()
+    try_click(login_button, browser)
     log(log.INFO, "Login successful")
 
 
 def process_tickets(browser: WebDriver, wait: WebDriverWait):
     element = wait.until(EC.presence_of_element_located((By.ID, "new-choice")))
     element.click()
-    time.sleep(1)
+    time.sleep(0.5)
 
     for _ in range(PAGES_PROCESSING):
         while True:
@@ -68,7 +72,6 @@ def process_tickets(browser: WebDriver, wait: WebDriverWait):
                         buttons,
                         wait,
                         browser,
-                        buttons_xpath,
                         tickets_count,
                         date_data,
                         "higher",
@@ -87,18 +90,22 @@ def process_tickets(browser: WebDriver, wait: WebDriverWait):
                             tickets_count,
                         )
                         browser.back()
-                        minus_button = WebDriverWait(browser, 3).until(
-                            EC.presence_of_all_elements_located(
-                                (
-                                    By.XPATH,
-                                    '//*[@id="cat-ADULT"]/div/div[2]/div[2]/button[1]',
+                        try:
+                            minus_button = WebDriverWait(browser, 3).until(
+                                EC.presence_of_all_elements_located(
+                                    (
+                                        By.XPATH,
+                                        '//*[@id="cat-ADULT"]/div/div[2]/div[2]/button[1]',
+                                    )
                                 )
                             )
-                        )
-                        if minus_button:
-                            log(log.INFO, "Minus button clicked")
-                            minus_button[0].click()
+                        except TimeoutException:
+                            log(log.INFO, "Page is not loaded")
+                            restart_process(browser, wait)
+                            break
 
+                        log(log.INFO, "Minus button clicked")
+                        try_click(minus_button[0], browser)
                         tickets_count -= 1
                         continue
 
@@ -106,7 +113,6 @@ def process_tickets(browser: WebDriver, wait: WebDriverWait):
                         buttons,
                         wait,
                         browser,
-                        buttons_xpath,
                         tickets_count,
                         date_data,
                         "lower",
@@ -114,33 +120,40 @@ def process_tickets(browser: WebDriver, wait: WebDriverWait):
                 break
 
 
+def restart_process(browser: WebDriver, wait: WebDriverWait):
+    sign_in(browser, wait)
+
+    time.sleep(1)
+    element = wait.until(EC.presence_of_element_located((By.ID, "new-choice")))
+    element.click()
+
+
 def button_processing(
     buttons: list[WebElement],
     wait: WebDriverWait,
     browser: WebDriver,
-    buttons_xpath: str,
     tickets_count: int,
     date_data: str,
     floor: str,
 ):
-    for index in range(len(buttons)):
-        buttons_updated = wait.until(
-            EC.presence_of_all_elements_located((By.XPATH, buttons_xpath))
-        )
-        button = buttons_updated[index]
-        log(
-            log.INFO,
-            "Tickets [%s] for [%s]-[%s] in %s are booked",
-            tickets_count,
-            button.text,
-            date_data,
-            floor,
-        )
-        button.click()
-        browser.switch_to.new_window("tab")
-        # process new tickets
-        sign_in(browser, wait)
-        break
+    button = buttons[0]
+    btn_text = button.text
+    ActionChains(browser).move_to_element(button).perform()  # type: ignore
+    ActionChains(browser).click(button).perform()  # type: ignore
+
+    # try_click(button, browser)
+    log(
+        log.INFO,
+        "Tickets [%s] for [%s]-[%s] in %s are booked",
+        tickets_count,
+        btn_text,
+        date_data,
+        floor,
+    )
+    time.sleep(1)
+
+    browser.switch_to.new_window("tab")
+    sign_in(browser, wait)
 
     element = wait.until(EC.presence_of_element_located((By.ID, "new-choice")))
     element.click()
@@ -181,7 +194,8 @@ def prepare_tickets(browser: WebDriver, wait: WebDriverWait) -> str | None:
     month_text = browser.find_element(By.CLASS_NAME, "v-current-month").text
     date_data = " ".join([date.text, month_text])
     log(log.INFO, "Processing [%s] date", date_data)
-    date.click()
+    try_click(date, browser)
+
     return date_data
 
 
@@ -209,7 +223,8 @@ def get_tickets(tickets_count: int, browser: WebDriver, wait: WebDriverWait) -> 
             prepare_tickets(browser, wait)
 
     for counter in range(tickets_count):
-        plus_button.click()
+        try_click(plus_button, browser)
+
         if browser.find_elements(
             By.XPATH, '//*[@id="te-compo-quantity"]/div/div/div[2]'
         )[0].text:
@@ -217,18 +232,26 @@ def get_tickets(tickets_count: int, browser: WebDriver, wait: WebDriverWait) -> 
             minus_button = browser.find_element(
                 By.XPATH, '//*[@id="cat-ADULT"]/div/div[2]/div[2]/button[1]'
             )
-            minus_button.click()
+            try_click(minus_button, browser)
+
             tickets_count = counter
             break
 
     return tickets_count
 
 
-def click_continue(browser: WebDriver, wait: WebDriverWait):
+def try_click(button: WebElement, browser: WebDriver) -> None:
+    try:
+        button.click()
+    except ElementClickInterceptedException:
+        browser.execute_script("arguments[0].click();", button)
+
+
+def click_continue(browser: WebDriver, wait: WebDriverWait) -> None:
     button_next = wait.until(
         EC.presence_of_element_located(
             (By.XPATH, '//*[@id="te-funnel-composition"]/div/div[4]/div/div/button')
         )
     )
     browser.execute_script('arguments[0].removeAttribute("disabled")', button_next)
-    button_next.click()
+    browser.execute_script("arguments[0].click();", button_next)
