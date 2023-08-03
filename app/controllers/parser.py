@@ -18,9 +18,8 @@ TICKETS_PER_DAY = 50
 
 def sign_in(browser: WebDriver, wait: WebDriverWait):
     browser.get(LOGIN_PAGE_LINK)
-    assert browser.page_source
 
-    identificator_input = browser.find_element(By.ID, "userId")
+    identificator_input = wait.until(EC.presence_of_element_located((By.ID, "userId")))
     password_input = browser.find_element(By.ID, "loginPassword")
 
     identificator_input.send_keys(app.config["TTP_IDENTIFICATOR"])

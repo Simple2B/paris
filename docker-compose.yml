@@ -36,6 +36,12 @@ services:
       # - 127.0.0.1:5900:5900  # Video Stream
       # http://localhost:7900/?autoconnect=1&resize=scale&password=secret
       - 127.0.0.1:${SELENIUM_VNC_PORT:-7900}:7900 # VNC server
+    environment:
+      HUB_QUIET_TIMEOUT: 180000
+      HUB_TIMEOUT: 180000
+      HUB_POLLING_TIMEOUT: 180000
+      SE_NODE_SESSION_TIMEOUT: 180000
+      ENABLE_AUTOMATION: 1
 
 volumes:
   db_data:

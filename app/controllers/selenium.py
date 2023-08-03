@@ -22,4 +22,4 @@ def get_browser() -> Generator[WebDriver, None, None]:
         yield browser
     finally:
         log(log.INFO, "Processing finished")
-        browser.quit()
+        # browser.quit()
