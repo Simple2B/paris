@@ -26,6 +26,11 @@ services:
       - db
     ports:
       - 127.0.0.1:${LOCAL_WEB_PORT:-8000}:8000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`localhost`)"
+      # - "traefik.http.routers.portainer.tls=true"
+      # - "traefik.http.routers.portainer.tls.certresolver=myresolver"
 
   chrome:
     image: seleniarm/standalone-chromium
@@ -42,6 +47,30 @@ services:
       HUB_POLLING_TIMEOUT: 180000
       SE_NODE_SESSION_TIMEOUT: 180000
       ENABLE_AUTOMATION: 1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chrome.rule=Host(`browser.localhost`)"
+      # - "traefik.http.routers.portainer.tls=true"
+      # - "traefik.http.routers.portainer.tls.certresolver=myresolver"
+      - "traefik.http.services.chrome.loadbalancer.server.port=7900"
+
+
+  traefik:
+    image: traefik
+    restart: always
+    ports:
+        - 127.0.0.1:8080:80
+        # - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Certificates
+      # - "./data/traefik/:/data"
+    command:
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+    depends_on:
+      - app
+      - chrome
 
 volumes:
   db_data:
