@@ -1,36 +1,55 @@
 import time
 
-from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import (
     TimeoutException,
     ElementClickInterceptedException,
 )
-from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver import Chrome
 
 from app.logger import log
 from flask import current_app as app
 
 LOGIN_PAGE_LINK = "https://ticketpro.toureiffel.paris/login"
 NEW_ORDERS_LINK = "https://ticketpro.toureiffel.paris/new-order"
+MAIN_PAGE_LINK = "https://ticketpro.toureiffel.paris/"
+RECAP_LINK = "https://ticketpro.toureiffel.paris/recap"
 PAGES_PROCESSING = 3
 TICKETS_PER_DAY = 50
+MAX_RETRY_LOGIN_COUNT = 5
 
 
 def sign_in(browser: WebDriver, wait: WebDriverWait):
-    browser.get(LOGIN_PAGE_LINK)
+    counter = 0
 
-    identificator_input = wait.until(EC.presence_of_element_located((By.ID, "userId")))
-    password_input = browser.find_element(By.ID, "loginPassword")
+    while counter < MAX_RETRY_LOGIN_COUNT:
+        browser.get(LOGIN_PAGE_LINK)
 
-    identificator_input.send_keys(app.config["TTP_IDENTIFICATOR"])
-    password_input.send_keys(app.config["TTP_PASSWORD"])
+        identificator_input = wait.until(
+            EC.presence_of_element_located((By.ID, "userId"))
+        )
+        password_input = browser.find_element(By.ID, "loginPassword")
 
-    login_button = browser.find_element(By.ID, "log_to_b2b")
-    try_click(login_button, browser)
+        identificator_input.send_keys(app.config["TTP_IDENTIFICATOR"])
+        password_input.send_keys(app.config["TTP_PASSWORD"])
+
+        login_button = browser.find_element(By.ID, "log_to_b2b")
+        try_click(login_button, browser)
+        try:
+            wait.until(EC.url_to_be(MAIN_PAGE_LINK))
+        except TimeoutException:
+            log(log.ERROR, "Login failed. Rerunning [%s] ...", counter + 1)
+            counter += 1
+            continue
+        break
+    if counter == MAX_RETRY_LOGIN_COUNT:
+        log(log.ERROR, "Login failed")
+        return False
+
     log(log.INFO, "Login successful")
 
 
@@ -58,7 +77,9 @@ def process_tickets(browser: WebDriver, wait: WebDriverWait):
             while tickets_count > 0:
                 try:
                     click_continue(browser, wait)
-                    buttons_xpath = '//*[@id="te-compo-hour-first-floor-t0"]/ul/li'
+                    buttons_xpath = (
+                        '//*[@id="te-compo-hour-first-floor-t0"]/ul/li[1]/button'
+                    )
                     buttons = WebDriverWait(browser, 3).until(
                         EC.presence_of_all_elements_located(
                             (
@@ -69,7 +90,7 @@ def process_tickets(browser: WebDriver, wait: WebDriverWait):
                     )
 
                     button_processing(
-                        buttons,
+                        buttons_xpath,
                         wait,
                         browser,
                         tickets_count,
@@ -78,7 +99,9 @@ def process_tickets(browser: WebDriver, wait: WebDriverWait):
                     )
                 except TimeoutException:
                     log(log.INFO, "No tickets for upper floor")
-                    buttons_xpath = '//*[@id="te-compo-hour-first-floor-t1"]/ul/li'
+                    buttons_xpath = (
+                        '//*[@id="te-compo-hour-first-floor-t1"]/ul/li[1]/button'
+                    )
                     buttons = browser.find_elements(
                         By.XPATH,
                         buttons_xpath,
@@ -110,7 +133,7 @@ def process_tickets(browser: WebDriver, wait: WebDriverWait):
                         continue
 
                     button_processing(
-                        buttons,
+                        buttons_xpath,
                         wait,
                         browser,
                         tickets_count,
@@ -120,28 +143,26 @@ def process_tickets(browser: WebDriver, wait: WebDriverWait):
                 break
 
 
-def restart_process(browser: WebDriver, wait: WebDriverWait):
+def restart_process(browser: Chrome, wait: WebDriverWait):
     sign_in(browser, wait)
-
+    # TODO:  login can be failed
     time.sleep(1)
     element = wait.until(EC.presence_of_element_located((By.ID, "new-choice")))
     element.click()
 
 
 def button_processing(
-    buttons: list[WebElement],
+    buttons_xpath: str,
     wait: WebDriverWait,
-    browser: WebDriver,
+    browser: Chrome,
     tickets_count: int,
     date_data: str,
     floor: str,
 ):
-    button = buttons[0]
-    btn_text = button.text
-    ActionChains(browser).move_to_element(button).perform()  # type: ignore
-    ActionChains(browser).click(button).perform()  # type: ignore
+    button = wait.until(EC.element_to_be_clickable((By.XPATH, buttons_xpath)))
+    btn_text = browser.find_element(By.XPATH, buttons_xpath).text
+    try_click(button, browser)
 
-    # try_click(button, browser)
     log(
         log.INFO,
         "Tickets [%s] for [%s]-[%s] in %s are booked",
@@ -159,12 +180,11 @@ def button_processing(
     element.click()
 
 
-def prepare_tickets(browser: WebDriver, wait: WebDriverWait) -> str | None:
+def prepare_tickets(browser: Chrome, wait: WebDriverWait) -> str | None:
     """Prepares tickets for booking. Returns None if tickets are not available for current month"""
     available_dates = WebDriverWait(browser, 5).until(
         EC.presence_of_all_elements_located((By.CLASS_NAME, "v-calendar-day"))
     )
-    # available_dates = browser.find_elements(By.CLASS_NAME, "v-calendar-day")
     if not available_dates:
         log(log.WARNING, "No available dates")
         return
@@ -199,7 +219,7 @@ def prepare_tickets(browser: WebDriver, wait: WebDriverWait) -> str | None:
     return date_data
 
 
-def get_tickets(tickets_count: int, browser: WebDriver, wait: WebDriverWait) -> int:
+def get_tickets(tickets_count: int, browser: Chrome, wait: WebDriverWait) -> int:
     """_summary_
 
     Args:
@@ -240,14 +260,14 @@ def get_tickets(tickets_count: int, browser: WebDriver, wait: WebDriverWait) -> 
     return tickets_count
 
 
-def try_click(button: WebElement, browser: WebDriver) -> None:
+def try_click(button: WebElement, browser: Chrome) -> None:
     try:
         button.click()
     except ElementClickInterceptedException:
         browser.execute_script("arguments[0].click();", button)
 
 
-def click_continue(browser: WebDriver, wait: WebDriverWait) -> None:
+def click_continue(browser: Chrome, wait: WebDriverWait) -> None:
     button_next = wait.until(
         EC.presence_of_element_located(
             (By.XPATH, '//*[@id="te-funnel-composition"]/div/div[4]/div/div/button')
