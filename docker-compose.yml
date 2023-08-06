@@ -43,5 +43,21 @@ services:
       SE_NODE_SESSION_TIMEOUT: 180000
       ENABLE_AUTOMATION: 1
 
+  redis:
+    image: redis
+    ports:
+      - 127.0.0.1:${REDIS_LOCAL_PORT:-6379}:6379
+
+  worker:
+    build: .
+    # restart: always
+    command: sh ./start_worker.sh;
+    environment:
+      APP_ENV: production
+      REDIS_URL: redis://redis/
+    depends_on:
+      - db
+      - redis
+      - chrome
 volumes:
   db_data:

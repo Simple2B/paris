@@ -40,7 +40,7 @@ def init(app: Flask):
         print("admin created")
 
     @app.cli.command("init-bot")
-    def inti_bot():
+    def init_bot():
         """Init bot"""
         from selenium.webdriver.remote.webdriver import WebDriver
         from selenium.webdriver.support.wait import WebDriverWait

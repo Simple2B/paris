@@ -11,7 +11,6 @@ def get_browser() -> Generator[WebDriver, None, None]:
     from selenium.common.exceptions import SessionNotCreatedException
 
     chrome_options = Options()
-
     try:
         browser: WebDriver = webdriver.Remote(
             app.config["SELENIUM_REMOTE_DRIVER_URL"],

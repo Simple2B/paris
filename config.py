@@ -38,6 +38,10 @@ class BaseConfig(BaseSettings):
     TTP_IDENTIFICATOR: str
     TTP_PASSWORD: str
 
+    # REDIS
+    REDIS_URL: str
+    REDIS_LOCAL_PORT: str
+
     # Selenium
     SELENIUM_PORT: int = 4444
     SELENIUM_REMOTE_DRIVER_URL: str = "http://127.0.0.1:4444/wd/hub"
