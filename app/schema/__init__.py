@@ -2,3 +2,4 @@
 from .pagination import Pagination
 from .user import User
 from .bot import Bot
+from .base import Floor
