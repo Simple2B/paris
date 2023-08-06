@@ -16,7 +16,7 @@ class TicketDate(db.Model, ModelMixin):
         sa.DateTime, default=datetime.utcnow
     )
     updated_at: orm.Mapped[datetime] = orm.mapped_column(
-        sa.DateTime, default=None, nullable=True
+        sa.DateTime, default=datetime.utcnow, nullable=True
     )
     total_tickets: orm.Mapped[int] = orm.mapped_column(sa.Integer, default=0)
 
