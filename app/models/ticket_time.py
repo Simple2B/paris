@@ -18,10 +18,15 @@ class TicketTime(db.Model, ModelMixin):
     )
     clock: orm.Mapped[time] = orm.mapped_column(sa.Time, nullable=False)
     floor: orm.Mapped[s.Floor] = orm.mapped_column(
-        sa.Enum(s.Floor), nullable=False, server_default=s.Floor.FIRST
+        sa.Enum(s.Floor),
+        default=s.Floor.FIRST,
+        server_default=s.Floor.FIRST.value,
     )
     tickets: orm.Mapped[int] = orm.mapped_column(sa.Integer, default=0)
 
     ticket_date: orm.Mapped[TicketDate] = orm.relationship(
         "TicketDate", backref="tickets_time"
     )
+
+    def __repr__(self):
+        return f"<{self.id}:{self.ticket_date.date}:{self.clock}:{self.floor}:{self.tickets}>"

@@ -39,6 +39,13 @@
       "request": "launch",
       "module": "flask",
       "args": ["init-bot"]
+    },
+    {
+      "name": "db-tickets-populate",
+      "type": "python",
+      "request": "launch",
+      "module": "flask",
+      "args": ["db-tickets-populate"]
     }
   ]
 }

@@ -1,6 +1,6 @@
-from enum import IntEnum
+import enum
 
 
-class Floor(IntEnum):
-    FIRST: int = 1
-    SECOND: int = 2
+class Floor(enum.Enum):
+    FIRST: str = "FIRST"
+    SECOND: str = "SECOND"

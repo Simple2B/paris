@@ -15,7 +15,10 @@ class TicketDate(db.Model, ModelMixin):
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime, default=datetime.utcnow
     )
-    updated_at: orm.Mapped[datetime] = orm.mapped_column(sa.DateTime, default=None)
+    updated_at: orm.Mapped[datetime] = orm.mapped_column(
+        sa.DateTime, default=None, nullable=True
+    )
     total_tickets: orm.Mapped[int] = orm.mapped_column(sa.Integer, default=0)
-    first_floor: orm.Mapped[int] = orm.mapped_column(sa.Integer, default=0)
-    second_floor: orm.Mapped[int] = orm.mapped_column(sa.Integer, default=0)
+
+    def __repr__(self):
+        return f"<{self.id}:{self.date}:{self.total_tickets}>"

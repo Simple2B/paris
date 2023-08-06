@@ -1,3 +1,4 @@
+import datetime
 import click
 from flask import Flask
 import sqlalchemy as sa
@@ -52,3 +53,15 @@ def init(app: Flask):
 
             sign_in(browser, wait)
             process_tickets(browser, wait)
+
+    @app.cli.command()
+    @click.option("--days", default=60, type=int)
+    def db_tickets_populate(days: int):
+        """Fill DB by dummy data."""
+
+        from .test_tickets_gen import get_random_tickets
+
+        TODAY = datetime.date.today()
+        for i in range(0, days):
+            date = TODAY + datetime.timedelta(days=i)
+            get_random_tickets(date)

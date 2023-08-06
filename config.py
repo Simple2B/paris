@@ -2,6 +2,7 @@ import os
 from functools import lru_cache
 from pydantic import BaseSettings
 from flask import Flask
+from app.logger import log
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 APP_ENV = os.environ.get("APP_ENV", "development")
@@ -11,7 +12,8 @@ class BaseConfig(BaseSettings):
     """Base configuration."""
 
     ENV: str = "base"
-    APP_NAME: str = "Simple Flask App"
+    APP_NAME: str = "Paris Ticket Pro"
+    LOG_LEVEL: int = log.INFO
     SECRET_KEY: str
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
     WTF_CSRF_ENABLED: bool = False
@@ -50,7 +52,7 @@ class BaseConfig(BaseSettings):
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.
-        pass
+        log.set_level(app.config["LOG_LEVEL"])
 
     class Config:
         # `.env` takes priority over `project.env`
@@ -61,6 +63,7 @@ class DevelopmentConfig(BaseConfig):
     """Development configuration."""
 
     DEBUG: bool = True
+    LOG_LEVEL: int = log.DEBUG
     ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(
         BASE_DIR, "database-dev.sqlite3"
     )
