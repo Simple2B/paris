@@ -1,10 +1,10 @@
-from celery import Celery
+from selenium.webdriver.remote.webdriver import WebDriver
 
 from .celery_flask import celery_app as celery
 from config import config
 from app.logger import log
 
-configuration = config()
+cfg = config()
 
 
 @celery.task
@@ -15,25 +15,27 @@ def add(x: int, y: int) -> int:
 
 
 @celery.task
-def init_bot():
+def processing() -> None:
     """Init bot"""
-    from selenium.webdriver.remote.webdriver import WebDriver
     from selenium.webdriver.support.wait import WebDriverWait
     from app.controllers import get_browser, sign_in, process_tickets
 
     for browser in get_browser():
         browser: WebDriver = browser
-        wait = WebDriverWait(browser, 4)
+        wait = WebDriverWait(browser, cfg.BROWSER_TIMEOUT)
 
         sign_in(browser, wait)
         process_tickets(browser, wait)
 
 
-@celery.on_after_configure.connect
-def setup_celery(sender: Celery, **kwargs):
-    log(log.INFO, "Setup celery from [%s]", configuration.REDIS_URL)
-    # sender.add_periodic_task(
-    #     20,
-    #     init_bot.s(),
-    #     name="Bot initialization",
-    # )
+@celery.task
+def bot_go(url: str):
+    from app.controllers import get_browser
+
+    log(log.INFO, "BOT: Go to [%s]", url)
+
+    assert url
+    browser = get_browser()
+    assert browser
+    # browser: WebDriver = browser
+    browser.get(url)

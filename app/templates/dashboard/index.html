@@ -36,6 +36,16 @@
       Set
     </button>
   </form>
+  <form
+    class="flex items-center justify-center pb-4 bg-white dark:bg-gray-800"
+    method="post"
+    action="{{ url_for('dashboard.go') }}">
+    <input type="text" id="url" name="url" value="https://google.com">
+    
+    <button type="submit" class="px-3 py-2 text-xs text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 ml-2 font-medium rounded-lg text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+      Go to url
+    </button>
+  </form>
   <!-- browser begin -->
   <div class="w-full">
     <iframe

@@ -1,8 +1,6 @@
 import datetime
 import random
 
-from app import models as m
-from app import db
 from app import schema as s
 from app import controllers as c
 

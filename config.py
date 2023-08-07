@@ -54,6 +54,7 @@ class BaseConfig(BaseSettings):
     BROWSER_URL: str = ""
     SELENIUM_VNC_WIDTH: str = "1024"
     SELENIUM_VNC_HEIGHT: str = "768"
+    BROWSER_TIMEOUT: float = 4
 
     @staticmethod
     def configure(app: Flask):
@@ -108,6 +109,8 @@ class ProductionConfig(BaseConfig):
         "DATABASE_URL", "sqlite:///" + os.path.join(BASE_DIR, "database.sqlite3")
     )
     WTF_CSRF_ENABLED = True
+    BROWSER_URL: str = "http://browser.localhost:8080/"
+    SELENIUM_REMOTE_DRIVER_URL: str = "http://chrome:4444/wd/hub"
 
     class Config:
         fields = {

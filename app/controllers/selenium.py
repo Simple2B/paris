@@ -12,9 +12,12 @@ def get_browser() -> WebDriver | None:
 
     chrome_options = Options()
     try:
-        return webdriver.Remote(
+        log(log.DEBUG, "Initializing browser (before)")
+        browser = webdriver.Remote(
             app.config["SELENIUM_REMOTE_DRIVER_URL"],
             options=chrome_options,
         )
+        log(log.INFO, "Browser initialized")
+        return browser
     except SessionNotCreatedException:
         log(log.ERROR, "Selenium session not created")

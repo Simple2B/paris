@@ -6,6 +6,7 @@ from sqlalchemy import orm
 from app import models as m
 from app import db, forms
 from app import schema as s
+from app import controllers as c
 
 
 def init(app: Flask):
@@ -13,7 +14,7 @@ def init(app: Flask):
     @app.shell_context_processor
     def get_context():
         """Objects exposed here will be automatically available from the shell."""
-        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm)
+        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm, c=c)
 
     if app.config["ENV"] != "production":
 
@@ -70,9 +71,4 @@ def init(app: Flask):
     @click.argument("url")
     def go(url: str):
         """Go to url"""
-        from selenium.webdriver.remote.webdriver import WebDriver
-        from app.controllers import get_browser
-
-        browser: WebDriver | None = get_browser()
-        assert browser
-        browser.get(url)
+        c.go(url)
