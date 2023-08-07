@@ -6,9 +6,12 @@
   "scripts": {
     "js-watch": "webpack --config webpack.dev.js --watch",
     "js": "webpack --config webpack.prod.js",
+    "js-dev": "webpack --config webpack.dev.js",
     "css": "tailwindcss -i ./src/styles.css -o ./app/static/css/styles.css --minify",
+    "css-dev": "tailwindcss -i ./src/styles.css -o ./app/static/css/styles.css",
     "css-watch": "tailwindcss -i ./src/styles.css -o ./app/static/css/styles.css --watch",
-    "build": "yarn css && yarn js"
+    "build": "yarn css && yarn js",
+    "dev": "yarn css-dev && yarn js-dev"
   },
   "author": "",
   "license": "ISC",

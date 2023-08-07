@@ -52,3 +52,14 @@ def init(app: Flask):
 
             sign_in(browser, wait)
             process_tickets(browser, wait)
+
+    @app.cli.command()
+    @click.argument("url")
+    def go(url: str):
+        """Go to url"""
+        from selenium.webdriver.remote.webdriver import WebDriver
+        from app.controllers import get_browser
+
+        browser: WebDriver | None = get_browser()
+        assert browser
+        browser.get(url)

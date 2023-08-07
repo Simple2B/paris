@@ -42,6 +42,12 @@ class BaseConfig(BaseSettings):
     SELENIUM_PORT: int = 4444
     SELENIUM_REMOTE_DRIVER_URL: str = "http://127.0.0.1:4444/wd/hub"
     SELENIUM_SESSION_FIND_TIMEOUT: int = 10
+    SELENIUM_VNC_PASSWORD: str
+    SELENIUM_VNC_AUTO_CONNECT: int
+    SELENIUM_VNC_RESIZE: str
+    BROWSER_URL: str = ""
+    SELENIUM_VNC_WIDTH: str = "1024"
+    SELENIUM_VNC_HEIGHT: str = "768"
 
     @staticmethod
     def configure(app: Flask):
@@ -60,6 +66,8 @@ class DevelopmentConfig(BaseConfig):
     ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(
         BASE_DIR, "database-dev.sqlite3"
     )
+
+    BROWSER_URL: str = "http://browser.localhost:8080/"
 
     class Config:
         fields = {
@@ -105,10 +113,10 @@ class ProductionConfig(BaseConfig):
 @lru_cache
 def config(name=APP_ENV) -> DevelopmentConfig | TestingConfig | ProductionConfig:
     CONF_MAP = dict(
-        development=DevelopmentConfig(),
-        testing=TestingConfig(),
-        production=ProductionConfig(),
+        development=DevelopmentConfig,
+        testing=TestingConfig,
+        production=ProductionConfig,
     )
-    configuration = CONF_MAP[name]
+    configuration = CONF_MAP[name]()  # type: ignore
     configuration.ENV = name
     return configuration
