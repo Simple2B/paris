@@ -39,6 +39,12 @@
       "request": "launch",
       "module": "flask",
       "args": ["init-bot"]
-    }
+    },
+    {
+      "name": "go google",
+      "type": "python",
+      "request": "launch",
+      "module": "flask",
+      "args": ["go", "https://www.google.com/"]
   ]
 }
