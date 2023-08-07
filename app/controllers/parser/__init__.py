@@ -10,11 +10,43 @@ from selenium.common.exceptions import (
     ElementClickInterceptedException,
 )
 from selenium.webdriver import Chrome
+import sqlalchemy as sa
+
+from app import models as m
+from app import db
+from app import schema as s
 
 from app.logger import log
 from flask import current_app as app
 
 
+class ParserError(Exception):
+    def __init__(self, message: str):
+        self.message = message
+
+
+class ParserCanceled(Exception):
+    def __init__(self, message: str):
+        self.message = message
+
+
+def raise_if_canceled():
+    bot: m.Bot = db.session.scalar(sa.select(m.Bot).with_for_update())
+    if bot.status == s.BotStatus.STOP:
+        raise ParserCanceled("Parser was canceled")
+
+
+# decorator for check if parser was canceled
+def check_canceled(func):
+    def wrapper(*args, **kwargs):
+        raise_if_canceled()
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+@check_canceled
 def sign_in(browser: WebDriver, wait: WebDriverWait) -> bool:
     counter = 0
 
@@ -182,3 +214,94 @@ def click_continue(browser: Chrome, wait: WebDriverWait) -> None:
     )
     browser.execute_script('arguments[0].removeAttribute("disabled")', button_next)
     browser.execute_script("arguments[0].click();", button_next)
+
+
+def crawler(browser: WebDriver, wait: WebDriverWait):
+    sign_in(browser, wait)
+    click_new_choice(wait)
+
+    for _ in range(app.config.PAGES_PROCESSING):
+        while True:
+            date_data = prepare_tickets(browser, wait)
+            if not date_data:
+                next_month_button = wait.until(
+                    EC.presence_of_element_located(
+                        (
+                            By.XPATH,
+                            '//*[@id="te-compo-date"]/div/div/div/div[2]/div/div/button[2]',
+                        )
+                    )
+                )
+                next_month_button.click()
+                break
+
+            tickets_count = get_tickets(app.config.TICKETS_PER_DAY, browser, wait)
+            while tickets_count > 0:
+                try:
+                    click_continue(browser, wait)
+                    buttons_xpath = (
+                        '//*[@id="te-compo-hour-first-floor-t0"]/ul/li[1]/button'
+                    )
+                    buttons = WebDriverWait(browser, 3).until(
+                        EC.presence_of_all_elements_located(
+                            (
+                                By.XPATH,
+                                buttons_xpath,
+                            )
+                        )
+                    )
+
+                    button_processing(
+                        buttons_xpath,
+                        wait,
+                        browser,
+                        tickets_count,
+                        date_data,
+                        "higher",
+                    )
+                except TimeoutException:
+                    log(log.INFO, "No tickets for upper floor")
+                    buttons_xpath = (
+                        '//*[@id="te-compo-hour-first-floor-t1"]/ul/li[1]/button'
+                    )
+                    buttons = browser.find_elements(
+                        By.XPATH,
+                        buttons_xpath,
+                    )
+                    if not buttons:
+                        log(
+                            log.INFO,
+                            "[%i] tickets are not available at all",
+                            tickets_count,
+                        )
+                        browser.back()
+                        try:
+                            minus_button = WebDriverWait(
+                                browser, app.config.BROWSER_TIMEOUT_SHORT
+                            ).until(
+                                EC.presence_of_all_elements_located(
+                                    (
+                                        By.XPATH,
+                                        '//*[@id="cat-ADULT"]/div/div[2]/div[2]/button[1]',
+                                    )
+                                )
+                            )
+                        except TimeoutException:
+                            log(log.INFO, "Page is not loaded")
+                            restart_process(browser, wait)
+                            break
+
+                        log(log.INFO, "Minus button clicked")
+                        try_click(minus_button[0], browser)
+                        tickets_count -= 1
+                        continue
+
+                    button_processing(
+                        buttons_xpath,
+                        wait,
+                        browser,
+                        tickets_count,
+                        date_data,
+                        "lower",
+                    )
+                break
