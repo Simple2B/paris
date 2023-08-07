@@ -18,14 +18,12 @@ def add(x: int, y: int) -> int:
 def processing() -> None:
     """Init bot"""
     from selenium.webdriver.support.wait import WebDriverWait
-    from app.controllers import get_browser, sign_in, process_tickets
+    from app.controllers import bot_crawler
 
-    for browser in get_browser():
-        browser: WebDriver = browser
-        wait = WebDriverWait(browser, cfg.BROWSER_TIMEOUT)
+    browser: WebDriver = browser
+    wait = WebDriverWait(browser, cfg.BROWSER_TIMEOUT)
 
-        sign_in(browser, wait)
-        process_tickets(browser, wait)
+    bot_crawler(browser, wait)
 
 
 @celery.task

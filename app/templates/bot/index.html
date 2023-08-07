@@ -1,0 +1,51 @@
+<!-- prettier-ignore -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+
+<div class="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
+
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <thead
+            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+        >
+        <tr>
+            <th scope="col" class="px-6 py-3">PID</th> <th scope="col" class="px-6 py-3">STATUS</th> <th scope="col" class="px-6 py-3">MESSAGE</th> <th scope="col" class="px-6 py-3">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr
+                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+            >
+            <td>
+                <span class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
+                1923
+                </span>
+            </td>
+            <td>
+                <span class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
+                RUNNING
+                </span>
+            </td>
+            <td>
+                <span class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
+                Collecting info from "https://ticketpro.toureiffel.paris/new-order", 9:30 AM - 19 Aug
+                </span>
+            </td>
+            <td>
+                <button type="button" class="bot-stop-button inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:red-blue-800">
+                    Stop
+                   </button>
+            </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</div>
+{% endblock content %}
+<!-- prettier-ignore -->
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/bot.js') }}" type="text/javascript" defer></script>
+{% endblock scripts %}

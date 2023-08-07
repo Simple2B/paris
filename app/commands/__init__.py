@@ -7,6 +7,9 @@ from app import models as m
 from app import db, forms
 from app import schema as s
 from app import controllers as c
+from config import config
+
+cfg = config()
 
 
 def init(app: Flask):
@@ -40,20 +43,6 @@ def init(app: Flask):
             password=app.config["ADMIN_PASSWORD"],
         ).save()
         print("admin created")
-
-    @app.cli.command("init-bot")
-    def init_bot():
-        """Init bot"""
-        from selenium.webdriver.remote.webdriver import WebDriver
-        from selenium.webdriver.support.wait import WebDriverWait
-        from app.controllers import get_browser, sign_in, process_tickets
-
-        for browser in get_browser():
-            browser: WebDriver = browser
-            wait = WebDriverWait(browser, 4)
-
-            sign_in(browser, wait)
-            process_tickets(browser, wait)
 
     @app.cli.command()
     @click.option("--days", default=60, type=int)

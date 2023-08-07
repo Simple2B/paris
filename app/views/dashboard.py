@@ -53,12 +53,10 @@ def size():
 @login_required
 def go():
     log(log.INFO, "dashboard.go")
-    url = request.form.get("url", type=str, default="")
-    if not url:
-        url = "https://google.com"
+    url = request.form.get("url", "https://google.com")
+
     c.go(url)
-    # TODO: onclick (fetch)
-    return redirect(url_for("dashboard.index"))
+    return jsonify("OK")
 
 
 @bp.route("/processing", methods=["POST"])

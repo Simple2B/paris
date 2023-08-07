@@ -14,20 +14,12 @@ from selenium.webdriver import Chrome
 from app.logger import log
 from flask import current_app as app
 
-LOGIN_PAGE_LINK = "https://ticketpro.toureiffel.paris/login"
-NEW_ORDERS_LINK = "https://ticketpro.toureiffel.paris/new-order"
-MAIN_PAGE_LINK = "https://ticketpro.toureiffel.paris/"
-RECAP_LINK = "https://ticketpro.toureiffel.paris/recap"
-PAGES_PROCESSING = 3
-TICKETS_PER_DAY = 50
-MAX_RETRY_LOGIN_COUNT = 5
 
-
-def sign_in(browser: WebDriver, wait: WebDriverWait):
+def sign_in(browser: WebDriver, wait: WebDriverWait) -> bool:
     counter = 0
 
-    while counter < MAX_RETRY_LOGIN_COUNT:
-        browser.get(LOGIN_PAGE_LINK)
+    while counter < app.config.MAX_RETRY_LOGIN_COUNT:
+        browser.get(app.config.LOGIN_PAGE_LINK)
 
         identificator_input = wait.until(
             EC.presence_of_element_located((By.ID, "userId"))
@@ -40,115 +32,25 @@ def sign_in(browser: WebDriver, wait: WebDriverWait):
         login_button = browser.find_element(By.ID, "log_to_b2b")
         try_click(login_button, browser)
         try:
-            wait.until(EC.url_to_be(MAIN_PAGE_LINK))
+            wait.until(EC.url_to_be(app.config.MAIN_PAGE_LINK))
         except TimeoutException:
             log(log.ERROR, "Login failed. Rerunning [%s] ...", counter + 1)
             counter += 1
             continue
         break
-    if counter == MAX_RETRY_LOGIN_COUNT:
+
+    if counter == app.config.MAX_RETRY_LOGIN_COUNT:
         log(log.ERROR, "Login failed")
         return False
 
     log(log.INFO, "Login successful")
-
-
-def process_tickets(browser: WebDriver, wait: WebDriverWait):
-    element = wait.until(EC.presence_of_element_located((By.ID, "new-choice")))
-    element.click()
-    time.sleep(0.5)
-
-    for _ in range(PAGES_PROCESSING):
-        while True:
-            date_data = prepare_tickets(browser, wait)
-            if not date_data:
-                next_month_button = wait.until(
-                    EC.presence_of_element_located(
-                        (
-                            By.XPATH,
-                            '//*[@id="te-compo-date"]/div/div/div/div[2]/div/div/button[2]',
-                        )
-                    )
-                )
-                next_month_button.click()
-                break
-
-            tickets_count = get_tickets(TICKETS_PER_DAY, browser, wait)
-            while tickets_count > 0:
-                try:
-                    click_continue(browser, wait)
-                    buttons_xpath = (
-                        '//*[@id="te-compo-hour-first-floor-t0"]/ul/li[1]/button'
-                    )
-                    buttons = WebDriverWait(browser, 3).until(
-                        EC.presence_of_all_elements_located(
-                            (
-                                By.XPATH,
-                                buttons_xpath,
-                            )
-                        )
-                    )
-
-                    button_processing(
-                        buttons_xpath,
-                        wait,
-                        browser,
-                        tickets_count,
-                        date_data,
-                        "higher",
-                    )
-                except TimeoutException:
-                    log(log.INFO, "No tickets for upper floor")
-                    buttons_xpath = (
-                        '//*[@id="te-compo-hour-first-floor-t1"]/ul/li[1]/button'
-                    )
-                    buttons = browser.find_elements(
-                        By.XPATH,
-                        buttons_xpath,
-                    )
-                    if not buttons:
-                        log(
-                            log.INFO,
-                            "[%i] tickets are not available at all",
-                            tickets_count,
-                        )
-                        browser.back()
-                        try:
-                            minus_button = WebDriverWait(browser, 3).until(
-                                EC.presence_of_all_elements_located(
-                                    (
-                                        By.XPATH,
-                                        '//*[@id="cat-ADULT"]/div/div[2]/div[2]/button[1]',
-                                    )
-                                )
-                            )
-                        except TimeoutException:
-                            log(log.INFO, "Page is not loaded")
-                            restart_process(browser, wait)
-                            break
-
-                        log(log.INFO, "Minus button clicked")
-                        try_click(minus_button[0], browser)
-                        tickets_count -= 1
-                        continue
-
-                    button_processing(
-                        buttons_xpath,
-                        wait,
-                        browser,
-                        tickets_count,
-                        date_data,
-                        "lower",
-                    )
-                break
+    return True
 
 
 def restart_process(browser: Chrome, wait: WebDriverWait):
     sign_in(browser, wait)
-    # TODO:  login can be failed
     time.sleep(1)
-    element = wait.until(EC.presence_of_element_located((By.ID, "new-choice")))
-    element.click()
+    click_new_choice(wait)
 
 
 def button_processing(
@@ -176,8 +78,13 @@ def button_processing(
     browser.switch_to.new_window("tab")
     sign_in(browser, wait)
 
+    click_new_choice(wait)
+
+
+def click_new_choice(wait: WebDriverWait):
     element = wait.until(EC.presence_of_element_located((By.ID, "new-choice")))
     element.click()
+    time.sleep(0.5)
 
 
 def prepare_tickets(browser: Chrome, wait: WebDriverWait) -> str | None:
