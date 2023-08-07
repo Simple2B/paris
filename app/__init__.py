@@ -23,6 +23,7 @@ def create_app(environment="development"):
         user_blueprint,
         bot_blueprint,
         ticket_blueprint,
+        dashboard_blueprint,
     )
     from app import models as m
 
@@ -48,6 +49,7 @@ def create_app(environment="development"):
     app.register_blueprint(user_blueprint)
     app.register_blueprint(bot_blueprint)
     app.register_blueprint(ticket_blueprint)
+    app.register_blueprint(dashboard_blueprint)
 
     # Set up flask login.
     @login_manager.user_loader
@@ -55,7 +57,7 @@ def create_app(environment="development"):
         query = m.User.select().where(m.User.id == int(id))
         return db.session.scalar(query)
 
-    login_manager.login_view = "auth.login"
+    login_manager.login_view = "auth.login"  # type: ignore
     login_manager.login_message_category = "info"
     login_manager.anonymous_user = m.AnonymousUser
 

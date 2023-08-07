@@ -1,0 +1,57 @@
+<!-- prettier-ignore -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <form
+    class="flex items-center justify-center py-4 bg-white dark:bg-gray-800"
+    method="post"
+    action="{{ url_for('dashboard.size') }}">
+    <a
+      href="{{config.BROWSER_URL}}?autoconnect=1&resize=scale"
+      target="_blank"
+      class="px-3 py-2 text-xs text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 ml-2 font-medium rounded-lg text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+      <!-- prettier-ignore -->
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /> </svg>
+      <span class="ml-1">in new tab</span>
+    </a>
+    <div class="relative">
+      <label for="ratio" class="sr-only">Size</label>
+      <select
+        id="ratio"
+        name="ratio"
+        class="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-50 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        <option value="{{browser_height}}x{{browser_width}}">
+          {{browser_height}}&times;{{browser_width}}
+        </option>
+        <option value="480x640">480&times;640</option>
+        <option value="600x800">600&times;800</option>
+        <option value="768x1024">768&times;1024</option>
+        <option value="1200x1600">1200&times;1600</option>
+        <option value="1536x2048">1536&times;2048</option>
+      </select>
+    </div>
+    <!-- prettier-ignore -->
+    <button type="submit" class="px-3 py-2 text-xs text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 ml-2 font-medium rounded-lg text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /> </svg>
+      Set
+    </button>
+  </form>
+  <!-- browser begin -->
+  <div class="w-full">
+    <iframe
+      src="{{browser_url}}"
+      frameborder="0"
+      title="browser"
+      name="browser-frame"
+      id="browser-frame"
+      width="{{browser_width}}"
+      height="{{browser_height}}"></iframe>
+  </div>
+  <!-- browser end -->
+</div>
+{% endblock content %}
+<!-- prettier-ignore -->
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/dashboard.js') }}" type="text/javascript" defer></script>
+{% endblock scripts %}

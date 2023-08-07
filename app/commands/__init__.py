@@ -65,3 +65,14 @@ def init(app: Flask):
         for i in range(0, days):
             date = TODAY + datetime.timedelta(days=i)
             get_random_tickets(date)
+
+    @app.cli.command()
+    @click.argument("url")
+    def go(url: str):
+        """Go to url"""
+        from selenium.webdriver.remote.webdriver import WebDriver
+        from app.controllers import get_browser
+
+        browser: WebDriver | None = get_browser()
+        assert browser
+        browser.get(url)

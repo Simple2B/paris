@@ -46,6 +46,13 @@
       "request": "launch",
       "module": "flask",
       "args": ["db-tickets-populate"]
+    },
+    {
+      "name": "go google",
+      "type": "python",
+      "request": "launch",
+      "module": "flask",
+      "args": ["go", "https://www.google.com/"]
     }
   ]
 }
