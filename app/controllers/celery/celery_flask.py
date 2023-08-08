@@ -9,11 +9,6 @@ settings = config()
 
 log(log.INFO, "REDIS_URL: [%s]", settings.REDIS_URL)
 
-# celery_app = Celery(__name__)
-# celery_app.conf.broker_url = settings.REDIS_URL
-# celery_app.conf.result_backend = settings.REDIS_URL
-# celery_app.conf.broker_connection_retry_on_startup = True
-
 
 class FlaskCelery(Celery):
     def __init__(self, *args, **kwargs):

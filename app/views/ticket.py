@@ -21,17 +21,6 @@ def index():
     q = request.args.get("q", type=str, default=None)
     query = m.TicketDate.select().order_by(m.TicketDate.date)
     count_query = sa.select(sa.func.count()).select_from(m.TicketDate)
-    # if q:
-    #     query = (
-    #         m.User.select()
-    #         .where(m.User.username.like(f"{q}%") | m.User.email.like(f"{q}%"))
-    #         .order_by(m.User.id)
-    #     )
-    #     count_query = (
-    #         sa.select(sa.func.count())
-    #         .where(m.User.username.like(f"{q}%") | m.User.email.like(f"{q}%"))
-    #         .select_from(m.User)
-    #     )
 
     pagination = create_pagination(total=db.session.scalar(count_query))
     tickets = db.session.scalars(
