@@ -34,11 +34,11 @@
       }
     },
     {
-      "name": "init-bot",
+      "name": "bot",
       "type": "python",
       "request": "launch",
       "module": "flask",
-      "args": ["init-bot"]
+      "args": ["bot"]
     },
     {
       "name": "db-tickets-populate",

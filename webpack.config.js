@@ -56,7 +56,17 @@ const dashboardConfig = {
   },
 };
 
-const configs = [baseConfig, userConfig, ticketConfig, dashboardConfig].map(conf =>
+const botConfig = {
+  entry: {
+    main: './src/bot.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/bot.js', // <--- Will be compiled to this single file
+  },
+};
+
+const configs = [baseConfig, userConfig, ticketConfig, dashboardConfig, botConfig].map(conf =>
   merge(defaultConfig, conf),
 );
 

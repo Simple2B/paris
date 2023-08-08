@@ -56,13 +56,14 @@ class BaseConfig(BaseSettings):
     SELENIUM_VNC_HEIGHT: str = "768"
     BROWSER_TIMEOUT: float = 4
     BROWSER_TIMEOUT_SHORT: float = 2
+    BROWSER_TIMEOUT_LONG: float = 10
 
     # Parser
     LOGIN_PAGE_LINK = "https://ticketpro.toureiffel.paris/login"
     NEW_ORDERS_LINK = "https://ticketpro.toureiffel.paris/new-order"
     MAIN_PAGE_LINK = "https://ticketpro.toureiffel.paris/"
     RECAP_LINK = "https://ticketpro.toureiffel.paris/recap"
-    PAGES_PROCESSING = 3
+    MONTHS_PAGES_PROCESSING = 3
     TICKETS_PER_DAY = 50
     MAX_RETRY_LOGIN_COUNT = 5
 

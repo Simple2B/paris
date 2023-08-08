@@ -19,23 +19,30 @@
             >
             <td>
                 <span class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-                1923
+                {{ bot.id }}
                 </span>
             </td>
             <td>
                 <span class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-                RUNNING
+                {{ bot.status.name }}
                 </span>
             </td>
             <td>
                 <span class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-                Collecting info from "https://ticketpro.toureiffel.paris/new-order", 9:30 AM - 19 Aug
+                {{ bot.message }}
                 </span>
             </td>
             <td>
-                <button type="button" class="bot-stop-button inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:red-blue-800">
-                    Stop
-                   </button>
+                <a href="{{ url_for('bot.stop') }}">
+                    <button type="button" id="stop-button" class="bot-stop-button inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:red-blue-800">
+                        Stop
+                    </button>
+                </a>
+                <a href="{{ url_for('bot.start') }}">
+                    <button type="button" id="start-button" class="bot-stop-button inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:red-blue-800">
+                        Start
+                    </button>
+                </a>
             </td>
             </tr>
         </tbody>

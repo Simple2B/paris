@@ -61,3 +61,10 @@ def init(app: Flask):
     def go(url: str):
         """Go to url"""
         c.go(url)
+
+    @app.cli.command()
+    def bot():
+        """Init bot"""
+        from app.controllers.celery.task_bot import bot as bot_task
+
+        bot_task()

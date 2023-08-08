@@ -10,6 +10,7 @@ from flask_login import login_required
 from app.logger import log
 from app import models as m
 from app import db
+from app import controllers as c
 
 
 bot_blueprint = Blueprint("bot", __name__, url_prefix="/bot")
@@ -34,13 +35,17 @@ def refresh():
 @login_required
 def start():
     log(log.INFO, "bot.start")
-    # TODO: start bot
-    return redirect(url_for("bot.index"))
+    bot: m.Bot = db.session.scalar(sa.select(m.Bot))
+
+    c.start_bot()
+    return render_template("bot/index.html", bot=bot)
 
 
 @bot_blueprint.route("/stop", methods=["GET"])
 @login_required
 def stop():
     log(log.INFO, "bot.stop")
-    # TODO: stop bot
-    return redirect(url_for("bot.index"))
+    bot: m.Bot = db.session.scalar(sa.select(m.Bot))
+
+    c.stop_bot()
+    return render_template("bot/index.html", bot=bot)

@@ -23,14 +23,15 @@ def bot() -> None:
     """Init bot"""
     from selenium.webdriver.support.wait import WebDriverWait
     from app.controllers.parser import crawler
+    from app.controllers import get_browser
 
-    browser: WebDriver = browser
+    browser: WebDriver = get_browser()
     wait = WebDriverWait(browser, cfg.BROWSER_TIMEOUT)
     bot: m.Bot = db.session.scalar(sa.select(m.Bot).with_for_update())
     bot.status = s.BotStatus.UP
     bot.save()
 
-    crawler(browser, wait)
+    crawler(browser, wait, bot)
 
 
 @celery.task
