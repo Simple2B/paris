@@ -7,13 +7,22 @@ from app import schema as s
 
 
 class Bot(db.Model, ModelMixin):
-    __tablename__ = "bots"
+    __tablename__ = "bot"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-    status: orm.Mapped[str] = orm.mapped_column(sa.String(64), default="offline")
+    status: orm.Mapped[s.BotStatus] = orm.mapped_column(
+        sa.Enum(s.BotStatus), default=s.BotStatus.DOWN.value
+    )
+    updated_at: orm.Mapped[sa.DateTime] = orm.mapped_column(
+        sa.DateTime,
+        default=sa.func.now(),
+        onupdate=sa.func.now(),
+    )
+    message: orm.Mapped[str] = orm.mapped_column(sa.String(256), default="")
+    task_id: orm.Mapped[str] = orm.mapped_column(sa.String(64), default=0)
 
     def __repr__(self):
-        return f"<Bot {self.id}>"
+        return f"<{self.id}:{self.status.name}>"
 
     @property
     def json(self):

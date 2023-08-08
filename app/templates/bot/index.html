@@ -1,0 +1,58 @@
+<!-- prettier-ignore -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+
+<div class="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
+
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <thead
+            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+        >
+        <tr>
+            <th scope="col" class="px-6 py-3">PID</th> <th scope="col" class="px-6 py-3">STATUS</th> <th scope="col" class="px-6 py-3">MESSAGE</th> <th scope="col" class="px-6 py-3">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr
+                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+            >
+            <td>
+                <span class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
+                {{ bot.id }}
+                </span>
+            </td>
+            <td>
+                <span class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
+                {{ bot.status.name }}
+                </span>
+            </td>
+            <td>
+                <span class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
+                {{ bot.message }}
+                </span>
+            </td>
+            <td>
+                <a href="{{ url_for('bot.stop') }}">
+                    <button type="button" id="stop-button" class="bot-stop-button inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:red-blue-800">
+                        Stop
+                    </button>
+                </a>
+                <a href="{{ url_for('bot.start') }}">
+                    <button type="button" id="start-button" class="bot-stop-button inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:red-blue-800">
+                        Start
+                    </button>
+                </a>
+            </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</div>
+{% endblock content %}
+<!-- prettier-ignore -->
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/bot.js') }}" type="text/javascript" defer></script>
+{% endblock scripts %}

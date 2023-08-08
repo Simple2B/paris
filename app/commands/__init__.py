@@ -1,3 +1,4 @@
+import datetime
 import click
 from flask import Flask
 import sqlalchemy as sa
@@ -5,6 +6,11 @@ from sqlalchemy import orm
 from app import models as m
 from app import db, forms
 from app import schema as s
+from app import controllers as c
+from app.logger import log
+from config import config
+
+cfg = config()
 
 
 def init(app: Flask):
@@ -12,7 +18,7 @@ def init(app: Flask):
     @app.shell_context_processor
     def get_context():
         """Objects exposed here will be automatically available from the shell."""
-        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm)
+        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm, c=c)
 
     if app.config["ENV"] != "production":
 
@@ -39,27 +45,35 @@ def init(app: Flask):
         ).save()
         print("admin created")
 
-    @app.cli.command("init-bot")
-    def inti_bot():
-        """Init bot"""
-        from selenium.webdriver.remote.webdriver import WebDriver
-        from selenium.webdriver.support.wait import WebDriverWait
-        from app.controllers import get_browser, sign_in, process_tickets
+    @app.cli.command()
+    @click.option("--days", default=60, type=int)
+    def db_tickets_populate(days: int):
+        """Fill DB by dummy data."""
 
-        for browser in get_browser():
-            browser: WebDriver = browser
-            wait = WebDriverWait(browser, 4)
+        from .test_tickets_gen import get_random_tickets
 
-            sign_in(browser, wait)
-            process_tickets(browser, wait)
+        TODAY = datetime.date.today()
+        for i in range(0, days):
+            date = TODAY + datetime.timedelta(days=i)
+            get_random_tickets(date)
 
     @app.cli.command()
     @click.argument("url")
     def go(url: str):
         """Go to url"""
-        from selenium.webdriver.remote.webdriver import WebDriver
-        from app.controllers import get_browser
+        c.go(url)
 
-        browser: WebDriver | None = get_browser()
-        assert browser
-        browser.get(url)
+    @app.cli.command()
+    def bot():
+        """Init bot"""
+        from app.controllers.celery.task_bot import bot as bot_task
+
+        bot_task.delay()
+        # task.wait()
+
+    @app.cli.command()
+    def create_bot():
+        """Create bot"""
+
+        m.Bot().save()
+        log(log.INFO, "Bot created")
