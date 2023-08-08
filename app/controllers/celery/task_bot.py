@@ -33,6 +33,11 @@ def bot() -> None:
 
     crawler(browser, wait, bot)
 
+    log(log.INFO, "BOT: Goes DOWN")
+    browser.quit()
+    bot.status = s.BotStatus.DOWN
+    bot.save()
+
 
 @celery.task
 def bot_go(url: str):
@@ -43,5 +48,4 @@ def bot_go(url: str):
     assert url
     browser = get_browser()
     assert browser
-    # browser: WebDriver = browser
     browser.get(url)

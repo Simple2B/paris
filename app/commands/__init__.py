@@ -68,3 +68,4 @@ def init(app: Flask):
         from app.controllers.celery.task_bot import bot as bot_task
 
         bot_task()
+        # task.wait()
