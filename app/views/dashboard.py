@@ -2,14 +2,16 @@ from flask import (
     Blueprint,
     render_template,
     current_app as app,
-    Response,
     redirect,
     url_for,
     request,
+    jsonify,
 )
+from celery.result import AsyncResult
+
 from flask_login import login_required
 from app.logger import log
-
+from app import controllers as c
 
 bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 
@@ -45,3 +47,34 @@ def size():
     else:
         log(log.WARNING, "dashboard.size: ratio not found")
     return redirect(url_for("dashboard.index"))
+
+
+@bp.route("/go", methods=["POST"])
+@login_required
+def go():
+    log(log.INFO, "dashboard.go")
+    url = request.form.get("url", "https://google.com")
+
+    c.go(url)
+    return jsonify("OK")
+
+
+@bp.route("/processing", methods=["POST"])
+@login_required
+def processing() -> dict[str, object]:
+    task = c.processing_task.delay()
+    log(log.INFO, "Bot initialization task created with id [%s]", task.id)
+    return {"task_id": task.id}
+
+
+@bp.route("/result/<id>", methods=["GET"])
+@login_required
+def task_result(id: str) -> dict[str, object]:
+    result = AsyncResult(id)
+    return jsonify(
+        {
+            "ready": result.ready(),
+            "successful": result.successful(),
+            "value": result.result if result.ready() else None,
+        }
+    )

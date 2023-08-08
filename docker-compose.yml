@@ -27,8 +27,8 @@ services:
     ports:
       - 127.0.0.1:${LOCAL_WEB_PORT:-8000}:8000
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`localhost`)"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.app.rule=Host(`localhost`)'
       # - "traefik.http.routers.portainer.tls=true"
       # - "traefik.http.routers.portainer.tls.certresolver=myresolver"
 
@@ -49,29 +49,44 @@ services:
       ENABLE_AUTOMATION: 1
       SE_VNC_PASSWORD: ${SELENIUM_VNC_PASSWORD:-pass}
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.chrome.rule=Host(`browser.localhost`)"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.chrome.rule=Host(`browser.localhost`)'
       # - "traefik.http.routers.portainer.tls=true"
       # - "traefik.http.routers.portainer.tls.certresolver=myresolver"
-      - "traefik.http.services.chrome.loadbalancer.server.port=7900"
-
+      - 'traefik.http.services.chrome.loadbalancer.server.port=7900'
 
   traefik:
     image: traefik
     restart: always
     ports:
-        - 127.0.0.1:8080:80
-        # - 443:443
+      - 127.0.0.1:8080:80
+      # - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # Certificates
       # - "./data/traefik/:/data"
     command:
-      - "--providers.docker"
-      - "--providers.docker.exposedbydefault=false"
+      - '--providers.docker'
+      - '--providers.docker.exposedbydefault=false'
     depends_on:
       - app
       - chrome
 
+  redis:
+    image: redis
+    ports:
+      - 127.0.0.1:${REDIS_LOCAL_PORT:-6379}:6379
+
+  bot:
+    build: .
+    # restart: always
+    command: sh ./start_worker.sh;
+    environment:
+      APP_ENV: production
+      REDIS_URL: redis://redis/
+    depends_on:
+      - db
+      - redis
+      - chrome
 volumes:
   db_data:

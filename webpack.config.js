@@ -36,6 +36,16 @@ const userConfig = {
   },
 };
 
+const ticketConfig = {
+  entry: {
+    main: './src/ticket.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/ticket.js', // <--- Will be compiled to this single file
+  },
+};
+
 const dashboardConfig = {
   entry: {
     main: './src/dashboard.ts',
@@ -46,7 +56,17 @@ const dashboardConfig = {
   },
 };
 
-const configs = [baseConfig, userConfig, dashboardConfig].map(conf =>
+const botConfig = {
+  entry: {
+    main: './src/bot.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/bot.js', // <--- Will be compiled to this single file
+  },
+};
+
+const configs = [baseConfig, userConfig, ticketConfig, dashboardConfig, botConfig].map(conf =>
   merge(defaultConfig, conf),
 );
 
