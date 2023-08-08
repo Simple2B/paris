@@ -6,5 +6,5 @@ def go(url: str):
     """Go to url"""
 
     log(log.INFO, "Going to [%s]", url)
-    task = bot_go.delay(url)
-    task.wait()
+    bot_go.delay(url)
+    # task.wait()

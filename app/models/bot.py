@@ -19,7 +19,7 @@ class Bot(db.Model, ModelMixin):
         onupdate=sa.func.now(),
     )
     message: orm.Mapped[str] = orm.mapped_column(sa.String(256), default="")
-    task_id: orm.Mapped[int] = orm.mapped_column(sa.Integer, default=0)
+    task_id: orm.Mapped[str] = orm.mapped_column(sa.String(64), default=0)
 
     def __repr__(self):
         return f"<{self.id}:{self.status.name}>"

@@ -31,7 +31,12 @@ def sign_in(browser: WebDriver, wait: WebDriverWait) -> bool:
 
     while attemps < CFG.MAX_RETRY_LOGIN_COUNT:
         browser.get(CFG.LOGIN_PAGE_LINK)
-
+        try:
+            wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
+            log(log.INFO, "Logged in successfully (via session)")
+            break
+        except TimeoutException:
+            log(log.INFO, "Session loggin expired. Logging in again")
         identificator_input = wait.until(
             EC.presence_of_element_located((By.ID, "userId"))
         )

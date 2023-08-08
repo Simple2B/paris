@@ -46,20 +46,6 @@ def w90():
 
 
 @celery.task
-def processing() -> None:
-    """Init bot"""
-    from selenium.webdriver.support.wait import WebDriverWait
-    from app.controllers import get_browser, sign_in, process_tickets
-
-    for browser in get_browser():
-        browser: WebDriver = browser
-        wait = WebDriverWait(browser, 4)
-
-        sign_in(browser, wait)
-        process_tickets(browser, wait)
-
-
-@celery.task
 def go(url: str) -> WebDriver:
     from app.commands.utils import go as go_to_url
 

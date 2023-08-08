@@ -18,7 +18,7 @@ from .exceptions import ParserCanceled, ParserError
 CFG = config()
 
 
-def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot) -> None:
+def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot):
     """Main function of crawler. Crawls through all available dates and collects info about tickets.
 
     Args:
@@ -133,9 +133,9 @@ def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot) -> None:
                 continue
 
     except ParserCanceled:
-        log(log.INFO, "Parser canceled")
-        return
+        log(log.INFO, "Parser CANCELED")
+        # TODO: add BotLog
 
-    except ParserError:
-        log(log.ERROR, "Parser error")
-        return
+    except ParserError as e:
+        log(log.ERROR, "Parser error: [%s]", e.message)
+        # TODO: add BotLog

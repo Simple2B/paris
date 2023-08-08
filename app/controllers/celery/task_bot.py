@@ -23,7 +23,7 @@ def bot() -> None:
     """Init bot"""
     from selenium.webdriver.support.wait import WebDriverWait
     from app.controllers.parser import crawler
-    from app.controllers import get_browser
+    from app.controllers.selenium import get_browser
 
     browser: WebDriver = get_browser()
     wait = WebDriverWait(browser, cfg.BROWSER_TIMEOUT)
@@ -34,18 +34,18 @@ def bot() -> None:
     crawler(browser, wait, bot)
 
     log(log.INFO, "BOT: Goes DOWN")
-    browser.quit()
     bot.status = s.BotStatus.DOWN
     bot.save()
 
 
 @celery.task
 def bot_go(url: str):
-    from app.controllers import get_browser
+    from app.controllers.selenium import get_browser
 
     log(log.INFO, "BOT: Go to [%s]", url)
 
     assert url
     browser = get_browser()
+    log(log.INFO, "BOT: browser instance [%s]", browser)
     assert browser
     browser.get(url)
