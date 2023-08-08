@@ -2,7 +2,6 @@ from flask import (
     Blueprint,
     render_template,
     current_app as app,
-    Response,
     redirect,
     url_for,
     request,
