@@ -79,7 +79,7 @@ jobs:
           username: ${{ env.DEPLOY_USER_NAME }}
           key: ${{ env.DEPLOY_SSH_KEY }}
           source: docker-compose.staging.yaml
-          target: ${{ env.STAGING_FOLDER }}docker-compose.yaml
+          target: ${{ env.STAGING_FOLDER }}
       - name: deploy
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -88,6 +88,7 @@ jobs:
           key: ${{ env.DEPLOY_SSH_KEY }}
           script: |
             cd ${{ env.STAGING_FOLDER }} &&
+            mv docker-compose.staging.yaml docker-compose.yaml &&
             docker-compose pull &&
             docker-compose up -d &&
             docker system prune -f
