@@ -12,7 +12,7 @@ env:
   DEPLOY_USER_NAME: ${{ secrets.DEVELOP_USERNAME }}
   DEPLOY_SSH_KEY: ${{ secrets.DEVELOP_SSH_KEY }}
   DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-  STAGING_FOLDER: '~/paris/'
+  STAGING_FOLDER: '~/paris'
 
 jobs:
   test:
