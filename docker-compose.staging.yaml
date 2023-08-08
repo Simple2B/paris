@@ -65,8 +65,6 @@ services:
 
   redis:
     image: redis
-    ports:
-      - 127.0.0.1:${REDIS_LOCAL_PORT:-6379}:6379
 
   bot:
     image: simple2b/paris
