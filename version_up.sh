@@ -27,6 +27,7 @@ git pull
 
 # Update the version in the pyproject.toml file
 poetry version $1
+npm version --no-git-tag-version $1
 new_version=$(poetry version -s)
 
 # Build UI
