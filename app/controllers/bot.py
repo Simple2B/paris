@@ -1,3 +1,5 @@
+import datetime
+
 import sqlalchemy as sa
 from flask import flash
 
@@ -16,6 +18,14 @@ def start_bot():
         log(log.WARNING, "BOT: Wrong status [%s]", bot.status.name)
         flash(f"BOT: Wrong status [{bot.status.name}]", "danger")
         return
+
+    today = datetime.date.today()
+    tickets: m.TicketDate = db.session.scalar(
+        sa.select(m.TicketDate).where(m.TicketDate.date < today)
+    )
+    for ticket in tickets:
+        log(log.INFO, "Deleting old ticket [%s]", ticket.date)
+        db.session.delete(ticket)
 
     bot.status = s.BotStatus.START
     bot.message = "Initilization"
