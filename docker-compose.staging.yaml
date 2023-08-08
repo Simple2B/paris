@@ -14,20 +14,6 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD:-passwd}
       PGUSER: ${POSTGRES_USER:-postgres}
 
-  app:
-    image: simple2b/paris
-    restart: always
-    command: sh ./start_server.sh
-    environment:
-      APP_ENV: production
-    depends_on:
-      - db
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`paris.simple2b.net`)"
-      # - "traefik.http.routers.portainer.tls=true"
-      # - "traefik.http.routers.portainer.tls.certresolver=myresolver"
-
   chrome:
     image: seleniarm/standalone-chromium
     # image: seleniarm/standalone-firefox
@@ -66,13 +52,28 @@ services:
   redis:
     image: redis
 
-  bot:
-    image: simple2b/paris
+  app:
+    image: simple2b/paris:latest
     restart: always
-    command: sh ./start_worker.sh;
-    environment:
-      APP_ENV: production
-      REDIS_URL: redis://redis/
+    command: sh ./start_server.sh
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`paris.simple2b.net`)"
+      # - "traefik.http.routers.portainer.tls=true"
+      # - "traefik.http.routers.portainer.tls.certresolver=myresolver"
+
+
+  bot:
+    image: simple2b/paris:latest
+    restart: always
+    command: sh ./start_worker.sh
+    env_file:
+      - .env
     depends_on:
       - db
       - redis
