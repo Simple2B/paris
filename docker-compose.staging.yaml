@@ -25,6 +25,8 @@ services:
       SE_NODE_SESSION_TIMEOUT: 180000
       ENABLE_AUTOMATION: 1
       SE_VNC_PASSWORD: ${SELENIUM_VNC_PASSWORD:-pass}
+    ports:
+      - 127.0.0.1:${SELENIUM_VNC_PORT:-7900}:7900 # VNC server
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.chrome.rule=Host(`browser.paris.simple2b.net`)"
