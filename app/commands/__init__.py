@@ -7,6 +7,7 @@ from app import models as m
 from app import db, forms
 from app import schema as s
 from app import controllers as c
+from app.logger import log
 from config import config
 
 cfg = config()
@@ -67,5 +68,12 @@ def init(app: Flask):
         """Init bot"""
         from app.controllers.celery.task_bot import bot as bot_task
 
-        bot_task()
+        bot_task.delay()
         # task.wait()
+
+    @app.cli.command()
+    def create_bot():
+        """Create bot"""
+
+        m.Bot().save()
+        log(log.INFO, "Bot created")
