@@ -90,5 +90,6 @@ jobs:
             cd ${{ env.STAGING_FOLDER }} &&
             mv docker-compose.staging.yaml docker-compose.yaml &&
             docker-compose pull &&
+            docker-compose down &&
             docker-compose up -d &&
             docker system prune -f
