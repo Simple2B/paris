@@ -3,26 +3,27 @@ from datetime import date
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver import Chrome
 from selenium.common.exceptions import (
     TimeoutException,
 )
 
-from app import models as m
 from app.logger import log
+from app import schema as s
 from config import config
-from .webelements import try_click, click_new_choice, click_continue, button_processing
+from .web_elements import try_click, click_new_choice, click_continue, button_processing
 from .utils import sign_in, get_tickets, restart_process, get_date_info, day_increment
 from .exceptions import ParserCanceled, ParserError
+from .bot_log import bot_log
 
 CFG = config()
 
 
-def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot):
+def crawler(browser: Chrome, wait: WebDriverWait):
     """Main function of crawler. Crawls through all available dates and collects info about tickets.
 
     Args:
-        browser (WebDriver): instance of driver
+        browser (Chrome): instance of driver
         wait (WebDriverWait): instance of webDriverWait
     """
     try:
@@ -55,7 +56,8 @@ def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot):
                 #     log(log.INFO, "No available dates for current month")
                 #     processing_date += date.timedelta(days=1)
                 #     break
-                log(log.INFO, "Processing date: %s", processing_date)
+
+                bot_log(f"Processing date: {processing_date}")
                 tickets_count = get_tickets(CFG.TICKETS_PER_DAY, browser, wait)
                 while tickets_count > 0:
                     try:
@@ -93,7 +95,7 @@ def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot):
                         )
                         if not buttons:
                             log(
-                                log.INFO,
+                                log.DEBUG,
                                 "[%i] tickets are not available at all",
                                 tickets_count,
                             )
@@ -108,7 +110,7 @@ def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot):
                                     )
                                 )
                             except TimeoutException:
-                                log(log.ERROR, "Page is not loaded")
+                                bot_log("Page is not loaded", s.BotLogLevel.ERROR)
                                 restart_process(browser, wait)
                                 break
 
@@ -133,9 +135,7 @@ def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot):
                 continue
 
     except ParserCanceled:
-        log(log.INFO, "Parser CANCELED")
-        # TODO: add BotLog
+        bot_log("Parser CANCELED")
 
     except ParserError as e:
-        log(log.ERROR, "Parser error: [%s]", e.message)
-        # TODO: add BotLog
+        bot_log(f"Parser error: [{e.message}]", s.BotLogLevel.ERROR)

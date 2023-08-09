@@ -4,22 +4,22 @@ from pydantic import BaseModel
 
 
 class BotStatus(enum.Enum):
-    DOWN: str = "DOWN"
-    START: str = "START"
-    UP: str = "UP"
-    STOP: str = "STOP"
-    WARNING: str = "WARNING"
-    ERROR: str = "ERROR"
-    CRITICAL: str = "CRITICAL"
-    CLEAN: str = "CLEAN"  # clean up WARNING/ERROR/CRITICAL status
+    DOWN = "DOWN"
+    START = "START"
+    UP = "UP"
+    STOP = "STOP"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+    CLEAN = "CLEAN"  # clean up WARNING/ERROR/CRITICAL status
 
 
 class BotLogLevel(enum.Enum):
-    DEBUG: str = "DEBUG"
-    INFO: str = "INFO"
-    WARNING: str = "WARNING"
-    ERROR: str = "ERROR"
-    CRITICAL: str = "CRITICAL"
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
 
 
 class Bot(BaseModel):

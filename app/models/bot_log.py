@@ -24,7 +24,7 @@ class BotLog(db.Model, ModelMixin):
     )
     message: orm.Mapped[str] = orm.mapped_column(sa.String(256), default="")
 
-    bot: orm.Mapped[Bot] = orm.relationship("Bot", backref="bot_logs")
+    bot: orm.Mapped[Bot] = orm.relationship("Bot", backref="logs")
 
     def __repr__(self):
         return f"<{self.id}:{self.level.name}:{self.message}>"
