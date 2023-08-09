@@ -17,6 +17,7 @@ mail = Mail()
 
 def create_app(environment="development"):
     from config import config
+    from app.controllers.jinja_globals import form_hidden_tag
     from app.views import (
         main_blueprint,
         auth_blueprint,
@@ -50,6 +51,8 @@ def create_app(environment="development"):
     app.register_blueprint(bot_blueprint)
     app.register_blueprint(ticket_blueprint)
     app.register_blueprint(dashboard_blueprint)
+
+    app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
 
     # Set up flask login.
     @login_manager.user_loader
