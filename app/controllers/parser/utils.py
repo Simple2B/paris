@@ -3,46 +3,45 @@ import datetime
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common.exceptions import (
     TimeoutException,
 )
 from selenium.webdriver import Chrome
 
 from app.logger import log
+from app import schema as s
 from config import config
-from .webelements import try_click, click_new_choice
+from .web_elements import try_click, click_new_choice
 from .exceptions import check_canceled
+from .bot_log import bot_log
 
 
 CFG = config()
 
 
 @check_canceled
-def sign_in(browser: WebDriver, wait: WebDriverWait) -> bool:
+def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
     """Logins to TTP. Returns True if login was successful, False otherwise.
         Does CFG.MAX_RETRY_LOGIN_COUNT attempts to login.
 
     Args:
-        browser (WebDriver): instance of driver
+        browser (Chrome): instance of driver
         wait (WebDriverWait): instance of webDriverWait
     """
-    attempt = 0
+    attempts = 0
 
-    while attempt < CFG.MAX_RETRY_LOGIN_COUNT:
+    while attempts < CFG.MAX_RETRY_LOGIN_COUNT:
         browser.get(CFG.LOGIN_PAGE_LINK)
         try:
             wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
-            log(log.INFO, "Logged in successfully (via session)")
+            log(log.DEBUG, "Logged in successfully (via session)")
             break
         except TimeoutException:
-            log(log.INFO, "Session loggin expired. Logging in again")
-        identificator_input = wait.until(
-            EC.presence_of_element_located((By.ID, "userId"))
-        )
+            bot_log("Session login expired. Logging in again", s.BotLogLevel.WARNING)
+        identify_input = wait.until(EC.presence_of_element_located((By.ID, "userId")))
         password_input = browser.find_element(By.ID, "loginPassword")
 
-        identificator_input.send_keys(CFG.TTP_IDENTIFICATOR)
+        identify_input.send_keys(CFG.TTP_IDENTIFICATOR)
         password_input.send_keys(CFG.TTP_PASSWORD)
 
         login_button = wait.until(EC.presence_of_element_located((By.ID, "log_to_b2b")))
@@ -50,16 +49,19 @@ def sign_in(browser: WebDriver, wait: WebDriverWait) -> bool:
         try:
             wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
         except TimeoutException:
-            log(log.ERROR, "Login failed. Rerunning [%s] ...", attempt + 1)
-            attempt += 1
+            bot_log(
+                f"Login failed. Rerunning [{attempts + 1}] ...",
+                s.BotLogLevel.ERROR,
+            )
+            attempts += 1
             continue
         break
 
-    if attempt == CFG.MAX_RETRY_LOGIN_COUNT:
-        log(log.ERROR, "Login failed")
+    if attempts == CFG.MAX_RETRY_LOGIN_COUNT:
+        bot_log("Login failed", s.BotLogLevel.ERROR)
         return False
 
-    log(log.INFO, "Login successful")
+    bot_log("Login successful")
     return True
 
 
@@ -73,7 +75,7 @@ def restart_process(browser: Chrome, wait: WebDriverWait, month_button_clicks: i
         wait (WebDriverWait): instance of webDriverWait
         month_button_clicks (int): number of clicks on "next month" button
     """
-    log(log.INFO, "Logging in again")
+    log(log.DEBUG, "Logging in again")
 
     browser.execute_script("window.open('', '_blank')")
     # browser.execute_script("window.close('','_parent','');")
@@ -84,9 +86,9 @@ def restart_process(browser: Chrome, wait: WebDriverWait, month_button_clicks: i
     browser.get(CFG.LOGIN_PAGE_LINK)
     try:
         wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
-        log(log.INFO, "Logged in successfully (via session)")
+        bot_log("Logged in successfully (via session)")
     except TimeoutException:
-        log(log.INFO, "Session loggin expired. Logging in again")
+        bot_log("Session login expired. Logging in again", s.BotLogLevel.WARNING)
         sign_in(browser, WebDriverWait(browser, CFG.BROWSER_TIMEOUT_LONG))
     click_new_choice(wait)
 
@@ -123,11 +125,14 @@ def get_date_info(browser: Chrome, wait: WebDriverWait, day: int) -> bool:
             )
         )
     except TimeoutException:
-        log(log.WARNING, "Day [%s] is not avaialble (due to TimeoutException)", day)
+        bot_log(
+            f"Day [{day}] is not available (due to TimeoutException)",
+            s.BotLogLevel.WARNING,
+        )
         return False
 
     if "disabled" in date.get_attribute("class"):
-        log(log.INFO, "Day [%s] is not avaialble", day)
+        bot_log(f"Day [{day}] is not available")
         return False
 
     try_click(date, browser)
@@ -141,7 +146,7 @@ def prepare_tickets(browser: Chrome, wait: WebDriverWait) -> str | None:
         EC.presence_of_all_elements_located((By.CLASS_NAME, "v-calendar-day"))
     )
     if not available_dates:
-        log(log.WARNING, "No available dates")
+        bot_log("No available dates", s.BotLogLevel.WARNING)
         return
 
     filtered_dates = [
@@ -155,7 +160,7 @@ def prepare_tickets(browser: Chrome, wait: WebDriverWait) -> str | None:
         if "disabled" in date_element.get_attribute("class")
     ]
     if len(disabled_dates) == len(available_dates):
-        log(log.WARNING, "No available dates")
+        bot_log("No available dates", s.BotLogLevel.WARNING)
         return
 
     elif len(filtered_dates) == 0:
@@ -167,7 +172,7 @@ def prepare_tickets(browser: Chrome, wait: WebDriverWait) -> str | None:
 
     date = filtered_dates[0]
     date_data = date.text
-    log(log.INFO, "Processing [%s] date", date_data)
+    bot_log(f"Processing [{date_data}] date")
     try_click(date, browser)
 
     return date_data
@@ -182,7 +187,7 @@ def get_tickets(
 
     Args:
         tickets_count (int): upper bound of tickets count
-        browser (WebDriver): driver instance
+        browser (Chrome): driver instance
         wait (WebDriverWait): wait instance
 
     Returns:
@@ -198,7 +203,7 @@ def get_tickets(
             break
 
         except TimeoutException:
-            get_date_info(browser, wait, day)
+            prepare_tickets(browser, wait)
 
     for counter in range(tickets_count):
         try_click(plus_button, browser)
@@ -206,7 +211,7 @@ def get_tickets(
         if browser.find_elements(
             By.XPATH, '//*[@id="te-compo-quantity"]/div/div/div[2]'
         )[0].text:
-            log(log.INFO, "Only [%s] tickets are available", counter)
+            log(log.DEBUG, "Only [%s] tickets are available", counter)
             minus_button = browser.find_element(
                 By.XPATH, '//*[@id="cat-ADULT"]/div/div[2]/div[2]/button[1]'
             )
@@ -218,7 +223,7 @@ def get_tickets(
     return tickets_count
 
 
-def day_increment(processing_date: datetime.date) -> (datetime.date, bool):
+def day_increment(processing_date: datetime.date) -> tuple[datetime.date, bool]:
     """Increments day in processing_date.
     Returns (datetime.date, True) if month has changed, (datetime.date, False) otherwise
     """
@@ -226,6 +231,6 @@ def day_increment(processing_date: datetime.date) -> (datetime.date, bool):
 
     processing_date += datetime.timedelta(days=1)
     if current_month != processing_date.month:
-        log(log.INFO, "No available dates for current month")
+        bot_log("No available dates for current month", s.BotLogLevel.WARNING)
         return (processing_date, True)
     return (processing_date, False)

@@ -12,8 +12,10 @@
   },
   "cSpell.words": [
     "autoconnect",
+    "backref",
     "flowbite",
     "jsonify",
+    "onupdate",
     "pydantic",
     "pytest",
     "sqlalchemy",

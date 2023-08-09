@@ -16,9 +16,11 @@ class ParserCanceled(Exception):
 
 
 def raise_if_canceled():
-    bot: m.Bot = db.session.scalar(sa.select(m.Bot).with_for_update())
-    if bot.status == s.BotStatus.STOP:
-        raise ParserCanceled("Parser was canceled")
+    with db.begin() as session:
+        bot = session.scalar(sa.select(m.Bot))
+        assert bot
+        if bot.status == s.BotStatus.STOP:
+            raise ParserCanceled("Parser was canceled")
 
 
 # decorator for check if parser was canceled

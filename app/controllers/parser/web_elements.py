@@ -64,7 +64,7 @@ def button_processing(
     # try_click(button, browser)
 
     log(
-        log.INFO,
+        log.DEBUG,
         "Tickets [%s] for [%s]-[%s] in %s are available",
         tickets_count,
         btn_text,

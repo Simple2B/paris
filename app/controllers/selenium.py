@@ -1,12 +1,14 @@
-from selenium import webdriver
-from selenium.webdriver.remote.webdriver import WebDriver
-from flask import current_app as app
-from app.logger import log
 from functools import lru_cache
+
+from selenium import webdriver
+from selenium.webdriver import Chrome
+from flask import current_app as app
+
+from app.logger import log
 
 
 @lru_cache
-def get_browser() -> WebDriver | None:
+def get_browser() -> Chrome | None:
     from selenium.webdriver.chrome.options import Options
     from selenium.common.exceptions import SessionNotCreatedException
 
@@ -17,7 +19,7 @@ def get_browser() -> WebDriver | None:
             app.config["SELENIUM_REMOTE_DRIVER_URL"],
             options=chrome_options,
         )
-        log(log.INFO, "Browser initialized")
-        return browser
+        log(log.DEBUG, "Browser initialized")
+        return browser  # type: ignore
     except SessionNotCreatedException:
         log(log.ERROR, "Selenium session not created")

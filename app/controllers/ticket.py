@@ -2,6 +2,7 @@ import datetime
 
 from app import models as m
 from app import schema as s
+from app import db
 
 from app.logger import log
 
@@ -36,3 +37,9 @@ def add_ticket_time(
         floor=floor,
         tickets=count,
     ).save()
+
+
+def delete_all_tickets():
+    with db.begin() as session:
+        session.execute(m.TicketTime.delete())
+        session.execute(m.TicketDate.delete())

@@ -1,9 +1,7 @@
-from time import sleep
-from .celery_flask import celery_app as celery
-
-from selenium.webdriver.remote.webdriver import WebDriver
-
 import os
+from time import sleep
+
+from .celery_flask import celery_app as celery
 
 from app.logger import log
 
@@ -46,7 +44,13 @@ def w90():
 
 
 @celery.task
-def go(url: str) -> WebDriver:
-    from app.commands.utils import go as go_to_url
+def go(url: str):
+    from app.controllers.selenium import get_browser
 
-    return go_to_url(url)
+    log(log.INFO, "Go to [%s]", url)
+
+    if url:
+        browser = get_browser()
+        log(log.INFO, "browser instance [%s]", browser)
+        assert browser
+        browser.get(url)

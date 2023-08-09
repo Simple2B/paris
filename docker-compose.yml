@@ -24,6 +24,7 @@ services:
       APP_ENV: production
     depends_on:
       - db
+      - redis
     ports:
       - 127.0.0.1:${LOCAL_WEB_PORT:-8000}:8000
     labels:
