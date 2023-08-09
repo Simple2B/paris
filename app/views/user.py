@@ -88,7 +88,11 @@ def create():
         log(log.INFO, "Form submitted. User: [%s]", user)
         flash("User added!", "success")
         user.save()
-        return redirect(url_for("user.get_all"))
+
+    else:
+        log(log.ERROR, "User create errors: [%s]", form.errors)
+        flash(f"{form.errors}", "danger")
+    return redirect(url_for("user.get_all"))
 
 
 @bp.route("/delete/<int:id>", methods=["DELETE"])
