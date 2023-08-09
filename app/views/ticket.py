@@ -2,6 +2,9 @@ from flask import (
     Blueprint,
     render_template,
     request,
+    flash,
+    redirect,
+    url_for,
 )
 from flask_login import login_required
 import sqlalchemy as sa
@@ -35,4 +38,25 @@ def index():
         tickets=tickets,
         page=pagination,
         search_query=q,
+    )
+
+
+@bp.route("/buy/<int:ticket_date_id>", methods=["GET"])
+@login_required
+def buy(ticket_date_id: int):
+    log(log.INFO, "Ticket buy")
+    ticket_date = db.session.get(m.TicketDate, ticket_date_id)
+    if not ticket_date:
+        flash("Ticket date not found", "danger")
+        log(log.ERROR, "Ticket date not found - id:[%d]", ticket_date_id)
+        return redirect(url_for("ticket.index"))
+
+    ticket_times = db.session.scalars(
+        m.TicketTime.select().where(m.TicketTime.ticket_date_id == ticket_date_id)
+    ).all()
+
+    return render_template(
+        "ticket/buy.html",
+        tickets=ticket_times,
+        ticket_date=ticket_date,
     )
