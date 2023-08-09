@@ -68,8 +68,7 @@ def init(app: Flask):
         """Init bot"""
         from app.controllers.celery.task_bot import bot as bot_task
 
-        bot_task()
-        # bot_task.delay()
+        bot_task.delay()
         # task.wait()
 
     @app.cli.command()

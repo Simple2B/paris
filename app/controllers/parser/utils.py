@@ -203,7 +203,7 @@ def get_tickets(
             break
 
         except TimeoutException:
-            prepare_tickets(browser, wait)
+            get_date_info(browser, wait, day)
 
     for counter in range(tickets_count):
         try_click(plus_button, browser)

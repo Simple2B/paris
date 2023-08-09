@@ -43,6 +43,7 @@ def crawler(browser: Chrome, wait: WebDriverWait):
             get_to_month(browser, wait, month_button_clicks)
             while True:
                 if not get_date_info(browser, wait, processing_date.day):
+                    # TODO: check if there this date in db
                     processing_date, new_month_flag = day_increment(processing_date)
                     if new_month_flag:
                         break
@@ -55,7 +56,9 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                 #     break
 
                 bot_log(f"Processing date: {processing_date}")
-                tickets_count = get_tickets(CFG.TICKETS_PER_DAY, browser, wait)
+                tickets_count = get_tickets(
+                    CFG.TICKETS_PER_DAY, browser, wait, processing_date.day
+                )
                 while tickets_count > 0:
                     try:
                         click_continue(browser, wait)
@@ -77,7 +80,7 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                             browser,
                             tickets_count,
                             processing_date,
-                            "higher",
+                            s.Floor.FIRST,
                         )
                         # restart_process(browser, wait)
 
@@ -124,7 +127,7 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                             browser,
                             tickets_count,
                             processing_date,
-                            "lower",
+                            s.Floor.SECOND,
                         )
                         # restart_process(browser, wait)
                     get_to_month(browser, wait, month_button_clicks)
