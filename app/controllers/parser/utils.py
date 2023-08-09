@@ -162,7 +162,9 @@ def prepare_tickets(browser: Chrome, wait: WebDriverWait) -> str | None:
 
 
 @check_canceled
-def get_tickets(tickets_count: int, browser: Chrome, wait: WebDriverWait) -> int:
+def get_tickets(
+    tickets_count: int, browser: Chrome, wait: WebDriverWait, day: int
+) -> int:
     """Finds maximum available tickets and returns their count
         Browser url must be set to "new-order" page
 
@@ -184,7 +186,7 @@ def get_tickets(tickets_count: int, browser: Chrome, wait: WebDriverWait) -> int
             break
 
         except TimeoutException:
-            prepare_tickets(browser, wait)
+            get_date_info(browser, wait, day)
 
     for counter in range(tickets_count):
         try_click(plus_button, browser)

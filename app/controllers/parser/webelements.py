@@ -18,7 +18,6 @@ from .exceptions import check_canceled
 CFG = config()
 
 
-# TODO: check this function
 def wait_for_page_to_load(driver):
     return driver.execute_script("return document.readyState === 'complete'")
 

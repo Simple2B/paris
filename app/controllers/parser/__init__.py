@@ -35,6 +35,7 @@ def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot):
             while True:
                 # starts from current month and goes to the unprocessed month
                 for _ in range(month_button_clicks):
+                    # TODO: debug this code
                     next_month_button = wait.until(
                         EC.presence_of_element_located(
                             (
@@ -56,7 +57,9 @@ def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot):
                 #     processing_date += date.timedelta(days=1)
                 #     break
                 log(log.INFO, "Processing date: %s", processing_date)
-                tickets_count = get_tickets(CFG.TICKETS_PER_DAY, browser, wait)
+                tickets_count = get_tickets(
+                    CFG.TICKETS_PER_DAY, browser, wait, processing_date.day
+                )
                 while tickets_count > 0:
                     try:
                         click_continue(browser, wait)

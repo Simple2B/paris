@@ -20,9 +20,10 @@ def start_bot():
         return
 
     today = datetime.date.today()
-    tickets: m.TicketDate = db.session.scalar(
+    tickets: m.TicketDate = db.session.scalars(
         sa.select(m.TicketDate).where(m.TicketDate.date < today)
-    )
+    ).all()
+
     for ticket in tickets:
         log(log.INFO, "Deleting old ticket [%s]", ticket.date)
         db.session.delete(ticket)
@@ -37,7 +38,8 @@ def start_bot():
 
 def stop_bot():
     log(log.INFO, "BOT: Stop")
-    bot: m.Bot = db.session.scalar(sa.select(m.Bot).with_for_update())
+    # debug stops there
+    bot: m.Bot = db.session.scalar(sa.select(m.Bot))
     if bot.status != s.BotStatus.UP:
         log(log.WARNING, "BOT: Wrong status [%s]", bot.status.name)
         flash(f"BOT: Wrong status [{bot.status.name}]", "danger")
