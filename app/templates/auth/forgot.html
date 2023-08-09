@@ -12,7 +12,7 @@
             Type your email, and we send your password
           </h2>
           <form class="mt-8 space-y-6 from" role="form" action="{{ url_for('auth.forgot_pass') }}" method="post">
-            {{ form.hidden_tag() }}
+            {{ form_hidden_tag() }}
 
             <!-- prettier-ignore -->
             <div>
