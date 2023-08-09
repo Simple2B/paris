@@ -11,7 +11,13 @@ from selenium.common.exceptions import (
 from app.logger import log
 from app import schema as s
 from config import config
-from .web_elements import try_click, click_new_choice, click_continue, button_processing
+from .web_elements import (
+    try_click,
+    click_new_choice,
+    click_continue,
+    button_processing,
+    get_to_month,
+)
 from .utils import sign_in, get_tickets, restart_process, get_date_info, day_increment
 from .exceptions import ParserCanceled, ParserError
 from .bot_log import bot_log
@@ -33,19 +39,11 @@ def crawler(browser: Chrome, wait: WebDriverWait):
         processing_date = date.today()
 
         for month_button_clicks in range(CFG.MONTHS_PAGES_PROCESSING):
+            # starts from current month and goes to the unprocessed month
+            get_to_month(browser, wait, month_button_clicks)
             while True:
-                # starts from current month and goes to the unprocessed month
-                for _ in range(month_button_clicks):
-                    next_month_button = wait.until(
-                        EC.presence_of_element_located(
-                            (
-                                By.XPATH,
-                                '//*[@id="te-compo-date"]/div/div/div/div[2]/div/div/button[2]',
-                            )
-                        )
-                    )
-                    try_click(next_month_button, browser)
                 if not get_date_info(browser, wait, processing_date.day):
+                    # TODO: check if there this date in db
                     processing_date, new_month_flag = day_increment(processing_date)
                     if new_month_flag:
                         break
@@ -58,7 +56,9 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                 #     break
 
                 bot_log(f"Processing date: {processing_date}")
-                tickets_count = get_tickets(CFG.TICKETS_PER_DAY, browser, wait)
+                tickets_count = get_tickets(
+                    CFG.TICKETS_PER_DAY, browser, wait, processing_date.day
+                )
                 while tickets_count > 0:
                     try:
                         click_continue(browser, wait)
@@ -80,7 +80,7 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                             browser,
                             tickets_count,
                             processing_date,
-                            "higher",
+                            s.Floor.FIRST,
                         )
                         # restart_process(browser, wait)
 
@@ -100,6 +100,7 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                                 tickets_count,
                             )
                             browser.back()
+                            get_to_month(browser, wait, month_button_clicks)
                             try:
                                 minus_button = wait.until(
                                     EC.presence_of_all_elements_located(
@@ -111,7 +112,8 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                                 )
                             except TimeoutException:
                                 bot_log("Page is not loaded", s.BotLogLevel.ERROR)
-                                restart_process(browser, wait)
+                                restart_process(browser, wait, month_button_clicks)
+                                get_to_month(browser, wait, month_button_clicks)
                                 break
 
                             log(log.INFO, "Minus button clicked")
@@ -125,9 +127,11 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                             browser,
                             tickets_count,
                             processing_date,
-                            "lower",
+                            s.Floor.SECOND,
                         )
                         # restart_process(browser, wait)
+                    get_to_month(browser, wait, month_button_clicks)
+
                     break
                 processing_date, new_month_flag = day_increment(processing_date)
                 if new_month_flag:

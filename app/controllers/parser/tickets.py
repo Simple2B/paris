@@ -6,7 +6,7 @@ from app import db
 from .bot_log import bot_log
 
 
-def update_date_tickets_count(tickets_count: int, date: datetime.date):
+def update_date_tickets_count(tickets_count: int, date: datetime.date) -> int:
     """Update or create new TicketDate object
 
     Args:
@@ -31,6 +31,7 @@ def update_date_tickets_count(tickets_count: int, date: datetime.date):
                     m.TicketTime.ticket_date_id == ticket_date.id
                 )
             )
+        return ticket_date.id
 
 
 def update_ticket_time(
