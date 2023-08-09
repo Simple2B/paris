@@ -49,3 +49,14 @@ def bot_go(url: str):
     log(log.INFO, "BOT: browser instance [%s]", browser)
     assert browser
     browser.get(url)
+
+
+@celery.on_after_configure.connect  # type: ignore
+def setup_celery(*args, **kwargs):
+    bot: m.Bot = db.session.scalar(sa.select(m.Bot).with_for_update())
+    if not bot:
+        log(log.WARNING, "BOT: Not found")
+        bot = m.Bot().save()
+    else:
+        bot.status = s.BotStatus.DOWN
+        bot.save()

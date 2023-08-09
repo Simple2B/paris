@@ -17,7 +17,7 @@ class FlaskCelery(Celery):
         self.init_app()
 
         if "app" in kwargs:
-            self.init_app(kwargs["app"])
+            self.init_app(kwargs["app"])  # type: ignore
 
     def patch_task(self):
         TaskBase = self.Task
@@ -40,8 +40,8 @@ class FlaskCelery(Celery):
         self.app = app
 
         configuration = config("development")
-        self.conf.broker_url = configuration.REDIS_URL
-        self.conf.result_backend = configuration.REDIS_URL
+        self.conf.broker_url = configuration.REDIS_URL  # type: ignore
+        self.conf.result_backend = configuration.REDIS_URL  # type: ignore
         self.conf.broker_connection_retry_on_startup = True
 
 
