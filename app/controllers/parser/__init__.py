@@ -11,7 +11,13 @@ from selenium.common.exceptions import (
 from app import models as m
 from app.logger import log
 from config import config
-from .webelements import try_click, click_new_choice, click_continue, button_processing
+from .webelements import (
+    try_click,
+    click_new_choice,
+    click_continue,
+    button_processing,
+    get_to_month,
+)
 from .utils import sign_in, get_tickets, restart_process, get_date_info, day_increment
 from .exceptions import ParserCanceled, ParserError
 
@@ -32,19 +38,9 @@ def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot):
         processing_date = date.today()
 
         for month_button_clicks in range(CFG.MONTHS_PAGES_PROCESSING):
+            # starts from current month and goes to the unprocessed month
+            get_to_month(browser, wait, month_button_clicks)
             while True:
-                # starts from current month and goes to the unprocessed month
-                for _ in range(month_button_clicks):
-                    # TODO: debug this code
-                    next_month_button = wait.until(
-                        EC.presence_of_element_located(
-                            (
-                                By.XPATH,
-                                '//*[@id="te-compo-date"]/div/div/div/div[2]/div/div/button[2]',
-                            )
-                        )
-                    )
-                    try_click(next_month_button, browser)
                 if not get_date_info(browser, wait, processing_date.day):
                     processing_date, new_month_flag = day_increment(processing_date)
                     if new_month_flag:
@@ -101,6 +97,7 @@ def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot):
                                 tickets_count,
                             )
                             browser.back()
+                            get_to_month(browser, wait, month_button_clicks)
                             try:
                                 minus_button = wait.until(
                                     EC.presence_of_all_elements_located(
@@ -112,7 +109,8 @@ def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot):
                                 )
                             except TimeoutException:
                                 log(log.ERROR, "Page is not loaded")
-                                restart_process(browser, wait)
+                                restart_process(browser, wait, month_button_clicks)
+                                get_to_month(browser, wait, month_button_clicks)
                                 break
 
                             log(log.INFO, "Minus button clicked")
@@ -129,6 +127,8 @@ def crawler(browser: WebDriver, wait: WebDriverWait, bot: m.Bot):
                             "lower",
                         )
                         # restart_process(browser, wait)
+                    get_to_month(browser, wait, month_button_clicks)
+
                     break
                 processing_date, new_month_flag = day_increment(processing_date)
                 if new_month_flag:

@@ -27,9 +27,9 @@ def sign_in(browser: WebDriver, wait: WebDriverWait) -> bool:
         browser (WebDriver): instance of driver
         wait (WebDriverWait): instance of webDriverWait
     """
-    attemps = 0
+    attempt = 0
 
-    while attemps < CFG.MAX_RETRY_LOGIN_COUNT:
+    while attempt < CFG.MAX_RETRY_LOGIN_COUNT:
         browser.get(CFG.LOGIN_PAGE_LINK)
         try:
             wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
@@ -50,12 +50,12 @@ def sign_in(browser: WebDriver, wait: WebDriverWait) -> bool:
         try:
             wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
         except TimeoutException:
-            log(log.ERROR, "Login failed. Rerunning [%s] ...", attemps + 1)
-            attemps += 1
+            log(log.ERROR, "Login failed. Rerunning [%s] ...", attempt + 1)
+            attempt += 1
             continue
         break
 
-    if attemps == CFG.MAX_RETRY_LOGIN_COUNT:
+    if attempt == CFG.MAX_RETRY_LOGIN_COUNT:
         log(log.ERROR, "Login failed")
         return False
 
@@ -64,13 +64,14 @@ def sign_in(browser: WebDriver, wait: WebDriverWait) -> bool:
 
 
 @check_canceled
-def restart_process(browser: Chrome, wait: WebDriverWait):
+def restart_process(browser: Chrome, wait: WebDriverWait, month_button_clicks: int):
     """Restarts process (in same tab) in case of error.
 
 
     Args:
         browser (Chrome): instance of driver
         wait (WebDriverWait): instance of webDriverWait
+        month_button_clicks (int): number of clicks on "next month" button
     """
     log(log.INFO, "Logging in again")
 
@@ -88,6 +89,17 @@ def restart_process(browser: Chrome, wait: WebDriverWait):
         log(log.INFO, "Session loggin expired. Logging in again")
         sign_in(browser, WebDriverWait(browser, CFG.BROWSER_TIMEOUT_LONG))
     click_new_choice(wait)
+
+    for _ in range(month_button_clicks):
+        next_month_button = wait.until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    '//*[@id="te-compo-date"]/div/div/div/div[2]/div/div/button[2]',
+                )
+            )
+        )
+        try_click(next_month_button, browser)
 
 
 @check_canceled

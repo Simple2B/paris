@@ -79,3 +79,16 @@ def button_processing(
     # sign_in(browser, wait)
 
     # click_new_choice(wait)
+
+
+def get_to_month(browser: Chrome, wait: WebDriverWait, month_button_clicks: int):
+    for _ in range(month_button_clicks):
+        next_month_button = wait.until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    '//*[@id="te-compo-date"]/div/div/div/div[2]/div/div/button[2]',
+                )
+            )
+        )
+        try_click(next_month_button, browser)
