@@ -43,6 +43,24 @@ class FlaskCelery(Celery):
         self.conf.broker_url = configuration.REDIS_URL  # type: ignore
         self.conf.result_backend = configuration.REDIS_URL  # type: ignore
         self.conf.broker_connection_retry_on_startup = True
+        self.__reset_bot()
+
+    def __reset_bot(self):
+        """Setup celery"""
+        import sqlalchemy as sa
+        from app import models as m
+        from app import db
+        from app import schema as s
+
+        log(log.INFO, "Celery: setup")
+        bot: m.Bot = db.session.scalar(sa.select(m.Bot).with_for_update())
+        if not bot:
+            log(log.WARNING, "BOT: Not found - create new")
+            bot = m.Bot().save()
+        else:
+            log(log.INFO, "BOT: Found [%s]. Reset it", bot)
+            bot.status = s.BotStatus.DOWN
+            bot.save()
 
 
 celery_app = FlaskCelery()
