@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "paris.simple2b"
-version = "0.1.15"
+version = "0.1.16"
 description = "Crowler "
 authors = ["Simple2B <simple2b.info@gmail.com>"]
 
