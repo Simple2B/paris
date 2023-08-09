@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14
+    restart: always
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-passwd}
+      POSTGRES_DB: db
+      PGDATABASE: db
+      PGPASSWORD: ${POSTGRES_PASSWORD:-passwd}
+      PGUSER: ${POSTGRES_USER:-postgres}
+
+  chrome:
+    image: seleniarm/standalone-chromium
+    # image: seleniarm/standalone-firefox
+    shm_size: 2gb
+    environment:
+      HUB_QUIET_TIMEOUT: 180000
+      HUB_TIMEOUT: 180000
+      HUB_POLLING_TIMEOUT: 180000
+      SE_NODE_SESSION_TIMEOUT: 180000
+      ENABLE_AUTOMATION: 1
+      SE_VNC_PASSWORD: ${SELENIUM_VNC_PASSWORD:-pass}
+    ports:
+      - 127.0.0.1:${SELENIUM_VNC_PORT:-7900}:7900 # VNC server
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chrome.rule=Host(`browser.localhost`)"
+      # - "traefik.http.routers.portainer.tls=true"
+      # - "traefik.http.routers.portainer.tls.certresolver=myresolver"
+      - "traefik.http.services.chrome.loadbalancer.server.port=7900"
+
+  traefik:
+    image: traefik
+    restart: always
+    ports:
+        - 127.0.0.1:${APP_PORT}:80
+        # - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Certificates
+      # - "./data/traefik/:/data"
+    command:
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+    depends_on:
+      - app
+      - chrome
+
+  redis:
+    image: redis
+
+  app:
+    image: simple2b/paris:latest
+    restart: always
+    command: sh ./start_server.sh
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`localhost`)"
+      # - "traefik.http.routers.portainer.tls=true"
+      # - "traefik.http.routers.portainer.tls.certresolver=myresolver"
+
+
+  bot:
+    image: simple2b/paris:latest
+    restart: always
+    command: sh ./start_worker.sh
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+      - chrome
+
+volumes:
+  db_data:

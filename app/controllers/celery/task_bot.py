@@ -1,4 +1,3 @@
-from selenium.webdriver.remote.webdriver import WebDriver
 import sqlalchemy as sa
 
 from .celery_flask import celery_app as celery
@@ -25,9 +24,13 @@ def bot() -> None:
     from app.controllers.parser import crawler
     from app.controllers.selenium import get_browser
 
-    browser: WebDriver = get_browser()
+    browser = get_browser()
+    assert browser
     wait = WebDriverWait(browser, cfg.BROWSER_TIMEOUT)
     bot: m.Bot = db.session.scalar(sa.select(m.Bot).with_for_update())
+    if not bot:
+        log(log.WARNING, "BOT: Not found - create new")
+        bot = m.Bot().save()
     bot.status = s.BotStatus.UP
     bot.save()
 

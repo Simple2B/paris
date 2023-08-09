@@ -1,6 +1,6 @@
 {
-  "name": "static",
-  "version": "1.0.1",
+  "name": "paris.simple2b",
+  "version": "0.1.18",
   "description": "",
   "main": "index.js",
   "scripts": {

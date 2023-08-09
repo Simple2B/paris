@@ -21,8 +21,10 @@ def index():
     q = request.args.get("q", type=str, default=None)
     query = m.TicketDate.select().order_by(m.TicketDate.date)
     count_query = sa.select(sa.func.count()).select_from(m.TicketDate)
-
-    pagination = create_pagination(total=db.session.scalar(count_query))
+    total = db.session.scalar(count_query)
+    if not total:
+        total = 0
+    pagination = create_pagination(total)
     tickets = db.session.scalars(
         query.offset((pagination.page - 1) * pagination.per_page).limit(
             pagination.per_page

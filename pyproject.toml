@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "flask.app"
-version = "0.1.0"
-description = ""
-authors = ["denys <denysburimov@gmail.com>"]
+name = "paris.simple2b"
+version = "0.1.18"
+description = "Crowler "
+authors = ["Simple2B <simple2b.info@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
