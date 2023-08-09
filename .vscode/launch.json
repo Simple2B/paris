@@ -19,22 +19,20 @@
       "justMyCode": false
     },
     {
-      "name": "Docker: Python - Flask",
-      "type": "docker",
+      "name": "bot",
+      "type": "python",
       "request": "launch",
-      "preLaunchTask": "docker-run: debug",
-      "python": {
-        "pathMappings": [
-          {
-            "localRoot": "${workspaceFolder}",
-            "remoteRoot": "/app"
-          }
-        ],
-        "projectType": "flask"
-      }
+      "module": "celery",
+      "args": [
+        "-A",
+        "app.controllers.celery:celery",
+        "worker",
+        "-B",
+        "--concurrency=1"
+      ]
     },
     {
-      "name": "bot",
+      "name": "bot cmd",
       "type": "python",
       "request": "launch",
       "module": "flask",

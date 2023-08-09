@@ -6,6 +6,7 @@ from app import db
 from app import schema as s
 from config import config
 from app.logger import log
+from app.controllers.parser.bot_log import bot_log
 
 cfg = config()
 
@@ -27,18 +28,23 @@ def bot() -> None:
     browser = get_browser()
     assert browser
     wait = WebDriverWait(browser, cfg.BROWSER_TIMEOUT)
-    bot: m.Bot = db.session.scalar(sa.select(m.Bot).with_for_update())
-    if not bot:
-        log(log.WARNING, "BOT: Not found - create new")
-        bot = m.Bot().save()
-    bot.status = s.BotStatus.UP
-    bot.save()
+    with db.begin() as session:
+        bot = session.scalar(sa.select(m.Bot))
+        if not bot:
+            log(log.WARNING, "BOT: Not found - create new")
+            bot = m.Bot()
+            session.add(bot)
+        bot.status = s.BotStatus.UP
 
-    crawler(browser, wait, bot)
+    bot_log("Goes UP")
+    crawler(browser, wait)
 
-    log(log.INFO, "BOT: Goes DOWN")
-    bot.status = s.BotStatus.DOWN
-    bot.save()
+    bot_log("Goes DOWN")
+
+    with db.begin() as session:
+        bot = session.scalar(sa.select(m.Bot))
+        assert bot
+        bot.status = s.BotStatus.DOWN
 
 
 @celery.task
