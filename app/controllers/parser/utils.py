@@ -66,13 +66,14 @@ def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
 
 
 @check_canceled
-def restart_process(browser: Chrome, wait: WebDriverWait):
+def restart_process(browser: Chrome, wait: WebDriverWait, month_button_clicks: int):
     """Restarts process (in same tab) in case of error.
 
 
     Args:
         browser (Chrome): instance of driver
         wait (WebDriverWait): instance of webDriverWait
+        month_button_clicks (int): number of clicks on "next month" button
     """
     log(log.DEBUG, "Logging in again")
 
@@ -90,6 +91,17 @@ def restart_process(browser: Chrome, wait: WebDriverWait):
         bot_log("Session login expired. Logging in again", s.BotLogLevel.WARNING)
         sign_in(browser, WebDriverWait(browser, CFG.BROWSER_TIMEOUT_LONG))
     click_new_choice(wait)
+
+    for _ in range(month_button_clicks):
+        next_month_button = wait.until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    '//*[@id="te-compo-date"]/div/div/div/div[2]/div/div/button[2]',
+                )
+            )
+        )
+        try_click(next_month_button, browser)
 
 
 @check_canceled
@@ -167,7 +179,9 @@ def prepare_tickets(browser: Chrome, wait: WebDriverWait) -> str | None:
 
 
 @check_canceled
-def get_tickets(tickets_count: int, browser: Chrome, wait: WebDriverWait) -> int:
+def get_tickets(
+    tickets_count: int, browser: Chrome, wait: WebDriverWait, day: int
+) -> int:
     """Finds maximum available tickets and returns their count
         Browser url must be set to "new-order" page
 
@@ -189,8 +203,7 @@ def get_tickets(tickets_count: int, browser: Chrome, wait: WebDriverWait) -> int
             break
 
         except TimeoutException:
-            bot_log("Page is not loaded yet. Waiting ...", s.BotLogLevel.WARNING)
-            prepare_tickets(browser, wait)
+            get_date_info(browser, wait, day)
 
     for counter in range(tickets_count):
         try_click(plus_button, browser)
