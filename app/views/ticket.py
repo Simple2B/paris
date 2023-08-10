@@ -51,6 +51,11 @@ def buy(ticket_date_id: int):
         log(log.ERROR, "Ticket date not found - id:[%d]", ticket_date_id)
         return redirect(url_for("ticket.index"))
 
+    if ticket_date.total_tickets == 0:
+        flash("TicketDate has no tickets", "danger")
+        log(log.ERROR, "TicketDate has no tickets - id:[%d]", ticket_date_id)
+        return redirect(url_for("ticket.index"))
+
     ticket_times = db.session.scalars(
         m.TicketTime.select().where(m.TicketTime.ticket_date_id == ticket_date_id)
     ).all()

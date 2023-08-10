@@ -114,7 +114,6 @@ def get_date_info(browser: Chrome, wait: WebDriverWait, day: int) -> bool:
         browser (Chrome): instance of driver
         wait (WebDriverWait): instance of webDriverWait
     """
-    # TODO: change f-string
     try:
         date = wait.until(
             EC.presence_of_element_located(
@@ -132,6 +131,7 @@ def get_date_info(browser: Chrome, wait: WebDriverWait, day: int) -> bool:
         return False
 
     if "disabled" in date.get_attribute("class"):
+        log(log.DEBUG, "button class is %s", date.get_attribute("class"))
         bot_log(f"Day [{day}] is not available")
         return False
 
