@@ -78,3 +78,22 @@ def reset_bot_log():
     log(log.INFO, "BOT: Reset log")
     with db.begin() as session:
         session.execute(sa.delete(m.BotLog))
+
+
+def reset_bot():
+    """Reset bot"""
+    from app.controllers.parser.bot_log import bot_log
+
+    with db.begin() as session:
+        bot = session.scalar(sa.select(m.Bot))
+        if not bot:
+            bot = m.Bot()
+            session.add(bot)
+            bot_log("BOT: Not found - create new", s.BotLogLevel.WARNING)
+        elif bot.status == s.BotStatus.DOWN:
+            bot_log("Bot status already down", s.BotLogLevel.WARNING)
+            flash("Bot status already down. ", "danger")
+            return
+
+        bot_log("Bot reset")
+        bot.status = s.BotStatus.DOWN

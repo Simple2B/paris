@@ -8,38 +8,54 @@
     <input type="status" id="status" value={{bot.status.name}} readonly class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
   </div>
 
-  <a href="{{ url_for('bot.stop') }}">
-    <button
-      type="button"
-      id="stop-button"
-      class="inline-flex items-center mx-4 px-6 py-2 text-sm font-medium text-center text-white rounded-lg bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:red-blue-800">
-      Stop
-    </button>
-  </a>
-  <a href="{{ url_for('bot.start') }}">
-    <button
-      type="button"
-      id="start-button"
-      class="inline-flex items-center mx-4 px-6 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:blue-800">
-      Start
-    </button>
-  </a>
-  <a href="{{ url_for('bot.refresh') }}">
-    <button
-      type="button"
-      id="start-button"
-      class="inline-flex items-center mx-4 px-6 py-2 text-sm font-medium text-center text-white rounded-lg bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:green-800">
-      Refresh
-    </button>
-  </a>
-  <a href="{{ url_for('bot.reset_log') }}">
-    <button
-      type="button"
-      id="reset-log-button"
-      class="inline-flex items-center mx-4 px-6 py-2 text-sm font-medium text-center text-white rounded-lg bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:red-blue-800">
-      Clear Log
-    </button>
-  </a>
+  <div class="flex justify-between">
+    <div>
+      <a href="{{ url_for('bot.stop') }}">
+        <button
+          type="button"
+          id="stop-button"
+          class="inline-flex items-center mx-4 px-6 py-2 text-sm font-medium text-center text-white rounded-lg bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:red-blue-800">
+          Stop
+        </button>
+      </a>
+      <a href="{{ url_for('bot.start') }}">
+        <button
+          type="button"
+          id="start-button"
+          class="inline-flex items-center mx-4 px-6 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:blue-800">
+          Start
+        </button>
+      </a>
+      <a href="{{ url_for('bot.refresh') }}">
+        <button
+          type="button"
+          id="start-button"
+          class="inline-flex items-center mx-4 px-6 py-2 text-sm font-medium text-center text-white rounded-lg bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:green-800">
+          Refresh
+        </button>
+      </a>
+    </div>
+  
+    <div>
+      <a href="{{ url_for('bot.reset_log') }}">
+        <button
+          type="button"
+          id="reset-log-button"
+          class="inline-flex items-center mx-4 px-6 py-2 text-sm font-medium text-center text-white rounded-lg bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:red-blue-800">
+          Clear Log
+        </button>
+      </a>
+  
+      <a href="{{ url_for('bot.reset') }}">
+        <button
+          type="button"
+          id="reset-button"
+          class="inline-flex items-center mx-4 px-6 py-2 text-sm font-medium text-center text-white rounded-lg bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:red-blue-800">
+          Reset bot
+        </button>
+      </a>
+    </div>
+  </div>
 
   <div class="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
     <!-- prettier-ignore -->
