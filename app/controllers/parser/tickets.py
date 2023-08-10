@@ -6,7 +6,7 @@ from app import db
 from .bot_log import bot_log
 
 
-def update_date_tickets_count(tickets_count: int, date: datetime.date) -> int:
+def update_date_tickets_count(tickets_count: int, date: datetime.date):
     """Update or create new TicketDate object
 
     Args:
@@ -24,6 +24,7 @@ def update_date_tickets_count(tickets_count: int, date: datetime.date) -> int:
         else:
             bot_log(f"Updating existing TicketDate - [{date}]")
             ticket_date.total_tickets = tickets_count
+
         if not tickets_count:
             bot_log(f"Delete all tickets for day - [{ticket_date.date}]")
             session.execute(
@@ -31,7 +32,6 @@ def update_date_tickets_count(tickets_count: int, date: datetime.date) -> int:
                     m.TicketTime.ticket_date_id == ticket_date.id
                 )
             )
-        return ticket_date.id
 
 
 def date_ticket_exist(date: datetime.date) -> bool:

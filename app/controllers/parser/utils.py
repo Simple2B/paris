@@ -11,7 +11,7 @@ from selenium.webdriver import Chrome
 from app.logger import log
 from app import schema as s
 from config import config
-from .web_elements import try_click, click_new_choice
+from .web_elements import try_click, click_new_choice, wait_for_page_to_load
 from .exceptions import check_canceled
 from .bot_log import bot_log
 
@@ -78,7 +78,6 @@ def restart_process(browser: Chrome, wait: WebDriverWait, month_button_clicks: i
     log(log.DEBUG, "Logging in again")
 
     browser.execute_script("window.open('', '_blank')")
-    # browser.execute_script("window.close('','_parent','');")
     browser.close()
     windows = browser.window_handles
     browser.switch_to.window(windows[0])
@@ -114,6 +113,7 @@ def get_date_info(browser: Chrome, wait: WebDriverWait, day: int) -> bool:
         browser (Chrome): instance of driver
         wait (WebDriverWait): instance of webDriverWait
     """
+    wait_for_page_to_load(browser)
     try:
         date = wait.until(
             EC.presence_of_element_located(
