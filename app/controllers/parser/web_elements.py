@@ -11,10 +11,13 @@ from selenium.webdriver.common.by import By
 
 from app.logger import log
 from app import models as m
+from app import schema as s
 from app import db
 from config import config
 from .tickets import update_date_tickets_count, update_ticket_time
 from .exceptions import check_canceled
+from .bot_log import bot_log
+
 
 CFG = config()
 
@@ -68,24 +71,30 @@ def button_processing(
             m.TicketDate.select().where(m.TicketDate.id == ticket_date_id)
         )
 
-        buttons = browser.find_elements(By.XPATH, buttons_xpath)
-        for btn in buttons:
-            log(
-                log.DEBUG,
-                "Tickets [%s] for [%s]-[%s] in %s are available",
-                tickets_count,
-                btn.text,
-                processing_date,
-                floor.name,
-            )
-            btn_time, meridiem = btn.text.split()
-            hours = int(btn_time.split(":")[0]) + 12 if "PM" in meridiem else 0
-            hours %= 24
-            minutes = int(btn_time.split(":")[1])
+        if not ticket_date:
+            bot_log("TicketDate id error", s.BotLogLevel.ERROR)
 
-            update_ticket_time(ticket_date, floor, time(hours, minutes), tickets_count)
+        else:
+            buttons = browser.find_elements(By.XPATH, buttons_xpath)
+            for btn in buttons:
+                log(
+                    log.DEBUG,
+                    "Tickets [%s] for [%s]-[%s] in %s are available",
+                    tickets_count,
+                    btn.text,
+                    processing_date,
+                    floor.name,
+                )
+                btn_time, meridiem = btn.text.split()
+                hours = int(btn_time.split(":")[0]) + 12 if "PM" in meridiem else 0
+                hours %= 24
+                minutes = int(btn_time.split(":")[1])
 
-            browser.back()
+                update_ticket_time(
+                    ticket_date, floor, time(hours, minutes), tickets_count
+                )
+
+    browser.back()
 
     # browser.switch_to.new_window("tab")
     # sign_in(browser, wait)
