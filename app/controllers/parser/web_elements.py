@@ -22,8 +22,11 @@ from .bot_log import bot_log
 CFG = config()
 
 
-def wait_for_page_to_load(driver):
-    return driver.execute_script("return document.readyState === 'complete'")
+def wait_for_page_to_load(browser):
+    while not browser.execute_script("return document.readyState === 'complete'"):
+        continue
+
+    return browser.execute_script("return document.readyState === 'complete'")
 
 
 @check_canceled
@@ -62,13 +65,12 @@ def button_processing(
     processing_date: date,
     floor: str,
 ):
-    # button = wait.until(EC.element_to_be_clickable((By.XPATH, buttons_xpath)))
     # TODO: check network traffic
-    ticket_date_id = update_date_tickets_count(tickets_count, processing_date)
+    update_date_tickets_count(tickets_count, processing_date)
 
     with db.begin() as session:
         ticket_date = session.scalar(
-            m.TicketDate.select().where(m.TicketDate.id == ticket_date_id)
+            m.TicketDate.select().where(m.TicketDate.date == processing_date)
         )
 
         if not ticket_date:

@@ -134,6 +134,8 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                     break
                 continue
 
+        bot_log(f"All {CFG.MONTHS_PAGES_PROCESSING} months are processed")
+
     except ParserCanceled:
         bot_log("Parser CANCELED")
 
