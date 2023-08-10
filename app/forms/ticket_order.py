@@ -14,10 +14,10 @@ class TicketOrderForm(FlaskForm):
     current_user_id = IntegerField("current_user_id", [DataRequired()])
 
     def validate_amount(self, field):
-        ticket_time = db.session.get(m.TicketTime, field.ticket_time_id.data)
+        ticket_time = db.session.get(m.TicketTime, self.ticket_time_id.data)
 
         if not ticket_time:
             raise ValidationError("There is no such ticket time")
 
-        if ticket_time.tickets < field.amount.data:
+        if ticket_time.tickets < field.data:
             raise ValidationError("There is no enough tickets for this time")
