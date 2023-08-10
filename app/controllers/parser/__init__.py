@@ -78,7 +78,6 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                             processing_date,
                             s.Floor.FIRST,
                         )
-                        # restart_process(browser, wait)
 
                     except TimeoutException:
                         log(log.INFO, "No tickets for upper floor")
@@ -125,7 +124,6 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                             processing_date,
                             s.Floor.SECOND,
                         )
-                        # restart_process(browser, wait)
                     get_to_month(browser, wait, month_button_clicks)
 
                     break

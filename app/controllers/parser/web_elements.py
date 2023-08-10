@@ -98,11 +98,6 @@ def button_processing(
 
     browser.back()
 
-    # browser.switch_to.new_window("tab")
-    # sign_in(browser, wait)
-
-    # click_new_choice(wait)
-
 
 def get_to_month(browser: Chrome, wait: WebDriverWait, month_button_clicks: int):
     for _ in range(month_button_clicks):

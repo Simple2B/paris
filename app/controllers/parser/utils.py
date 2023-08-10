@@ -78,7 +78,6 @@ def restart_process(browser: Chrome, wait: WebDriverWait, month_button_clicks: i
     log(log.DEBUG, "Logging in again")
 
     browser.execute_script("window.open('', '_blank')")
-    # browser.execute_script("window.close('','_parent','');")
     browser.close()
     windows = browser.window_handles
     browser.switch_to.window(windows[0])
