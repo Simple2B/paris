@@ -81,11 +81,4 @@ def init(app: Flask):
     @app.cli.command()
     def reset_bot():
         """Reset bot"""
-        with db.begin() as session:
-            bot = session.scalar(sa.select(m.Bot))
-            if not bot:
-                log(log.WARNING, "BOT: Not found - create new")
-                bot = m.Bot()
-                session.add(bot)
-            log(log.INFO, "Bot reset")
-            bot.status = s.BotStatus.DOWN
+        c.reset_bot()
