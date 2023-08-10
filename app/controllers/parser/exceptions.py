@@ -23,7 +23,6 @@ def raise_if_canceled():
             raise ParserCanceled("Parser was canceled")
 
 
-# decorator for check if parser was canceled
 def check_canceled(func):
     def wrapper(*args, **kwargs):
         raise_if_canceled()
