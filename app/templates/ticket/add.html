@@ -16,10 +16,7 @@
             </div>
             <div class="text-gray-900 dark:text-white text-xl font-semibold">
                 Time: <span id="timePlaceholder" class="text-2xl"></span>                    
-            </div>    
-            <div class="text-gray-900 dark:text-white text-xl font-semibold">
-                Date: <span id="datePlaceholder" class="text-2xl"></span>                  
-            </div>         
+            </div>                        
             <div class="text-xl font-medium text-gray-500 dark:text-gray-400">
                 User: {{current_user.username}}
             </div>
@@ -47,6 +44,7 @@
 
   {% block scripts %}
   <!-- prettier-ignore -->
+
   <script src="{{ url_for('static', filename='js/ticket.js') }}" type="text/javascript" defer></script>
   {% endblock scripts %}
   
