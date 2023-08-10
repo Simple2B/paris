@@ -34,6 +34,41 @@ def update_date_tickets_count(tickets_count: int, date: datetime.date) -> int:
         return ticket_date.id
 
 
+def date_ticket_exist(date: datetime.date) -> bool:
+    """returns True if DateTicket with this date exist
+
+    Args:
+        date (datetime.date): ticket date
+
+    Returns:
+        bool: True if exist, False otherwise
+    """
+    with db.begin() as session:
+        ticket_date: m.TicketDate = session.scalar(
+            m.TicketDate.select().where(m.TicketDate.date == date)
+        )
+        return bool(ticket_date)
+
+
+def delete_date_tickets(date: datetime.date):
+    """delete existing DateTicket
+
+    Args:
+        date (datetime.date): ticket date
+
+    """
+    with db.begin() as session:
+        ticket_date: m.TicketDate = session.scalar(
+            m.TicketDate.select().where(m.TicketDate.date == date)
+        )
+
+        bot_log(f"Delete all tickets for day - [{ticket_date.date}]")
+        session.execute(
+            m.TicketTime.delete().where(m.TicketTime.ticket_date_id == ticket_date.id)
+        )
+        session.execute(m.TicketTime.delete().where(m.TicketDate.id == ticket_date.id))
+
+
 def update_ticket_time(
     ticket_date: m.TicketDate,
     floor: s.Floor,

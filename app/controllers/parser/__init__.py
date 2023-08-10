@@ -20,6 +20,7 @@ from .web_elements import (
 )
 from .utils import sign_in, get_tickets, restart_process, get_date_info, day_increment
 from .exceptions import ParserCanceled, ParserError
+from .tickets import date_ticket_exist, update_date_tickets_count
 from .bot_log import bot_log
 
 CFG = config()
@@ -43,17 +44,12 @@ def crawler(browser: Chrome, wait: WebDriverWait):
             get_to_month(browser, wait, month_button_clicks)
             while True:
                 if not get_date_info(browser, wait, processing_date.day):
-                    # TODO: check if there this date in db
+                    if date_ticket_exist(processing_date):
+                        update_date_tickets_count(0, processing_date)
                     processing_date, new_month_flag = day_increment(processing_date)
                     if new_month_flag:
                         break
                     continue
-
-                # date_data = prepare_tickets(browser, wait)
-                # if not date_data:
-                #     log(log.INFO, "No available dates for current month")
-                #     processing_date += date.timedelta(days=1)
-                #     break
 
                 bot_log(f"Processing date: {processing_date}")
                 tickets_count = get_tickets(
