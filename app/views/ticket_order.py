@@ -25,10 +25,9 @@ def create():
             ticket_date_id=form.ticket_date_id.data,
             amount=form.amount.data,
         )
+        order.save()
         log(log.INFO, "Ticket order submitted. Order: [%s]", order)
         flash("Ticket order added!", "success")
-
-        order.save()
     else:
         log(log.ERROR, "Ticket order form validation failed. Form: [%s]", form)
         flash("Ticket order form validation failed!", "danger")
