@@ -25,7 +25,7 @@
       "module": "celery",
       "args": [
         "-A",
-        "app.controllers.celery:celery",
+        "app.controllers.celery.celery_worker:celery",
         "worker",
         "-B",
         "--concurrency=1"
