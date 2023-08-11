@@ -30,7 +30,7 @@ def create():
 
         order.save()
     else:
-        log(log.INFO, "Ticket order form validation failed. Form: [%s]", form)
+        log(log.ERROR, "Ticket order form validation failed. Form: [%s]", form)
         flash("Ticket order form validation failed!", "danger")
 
     return redirect(url_for("ticket.index"))
