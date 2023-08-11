@@ -10,7 +10,7 @@ class TicketOrderForm(FlaskForm):
     amount = IntegerField("amount", [DataRequired()])
     ticket_time_id = IntegerField("ticket_time_id", [DataRequired()])
     ticket_date_id = IntegerField("ticket_date_id", [DataRequired()])
-    current_user_id = IntegerField("current_user_id", [DataRequired()])
+    user_id = IntegerField("user_id", [DataRequired()])
 
     def validate_amount(self, field):
         ticket_time = db.session.get(m.TicketTime, self.ticket_time_id.data)
