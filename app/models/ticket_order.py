@@ -18,12 +18,13 @@ class TicketOrder(db.Model, ModelMixin):
         sa.Integer, sa.ForeignKey("tickets_time.id"), nullable=False
     )
     amount: orm.Mapped[int] = orm.mapped_column(sa.Integer, nullable=False)
-    message: orm.Mapped[str] = orm.mapped_column(sa.String(127), default="")
-    current_user_id: orm.Mapped[int] = orm.mapped_column(sa.Integer, nullable=False)
-    status: orm.Mapped[s.Status] = orm.mapped_column(
-        sa.Enum(s.Status),
-        default=s.Status.IN_PROGRESS,
-        server_default=s.Status.IN_PROGRESS.value,
+    user_id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer, sa.ForeignKey("users.id"), nullable=False
+    )
+    status: orm.Mapped[s.OrderStatus] = orm.mapped_column(
+        sa.Enum(s.OrderStatus),
+        default=s.OrderStatus.NEW,
+        server_default=s.OrderStatus.NEW.value,
     )
 
     @property

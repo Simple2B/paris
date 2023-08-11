@@ -4,7 +4,7 @@ from flask import (
     redirect,
     url_for,
 )
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 from app import models as m
 from app import forms as f
@@ -20,8 +20,7 @@ def create():
     form = f.TicketOrderForm()
     if form.validate_on_submit():
         order = m.TicketOrder(
-            current_user_id=form.current_user_id.data,
-            message=form.message.data,
+            user_id=current_user.id,
             ticket_time_id=form.ticket_time_id.data,
             ticket_date_id=form.ticket_date_id.data,
             amount=form.amount.data,
