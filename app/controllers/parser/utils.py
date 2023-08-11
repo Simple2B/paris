@@ -9,9 +9,16 @@ from selenium.common.exceptions import (
 from selenium.webdriver import Chrome
 
 from app.logger import log
+from app import models as m
 from app import schema as s
+from app import db
 from config import config
-from .web_elements import try_click, click_new_choice, wait_for_page_to_load
+from .web_elements import (
+    try_click,
+    click_new_choice,
+    wait_for_page_to_load,
+)
+from .tickets import update_date_tickets_count, update_ticket_time
 from .exceptions import check_canceled
 from .bot_log import bot_log
 
@@ -63,6 +70,55 @@ def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
 
     bot_log("Login successful")
     return True
+
+
+@check_canceled
+def button_processing(
+    buttons_xpath: str,
+    wait: WebDriverWait,
+    browser: Chrome,
+    tickets_count: int,
+    processing_date: datetime.date,
+    floor: str,
+    is_booking: bool = False,
+):
+    # TODO: check network traffic
+    update_date_tickets_count(tickets_count, processing_date)
+
+    with db.begin() as session:
+        ticket_date = session.scalar(
+            m.TicketDate.select().where(m.TicketDate.date == processing_date)
+        )
+
+        if not ticket_date:
+            bot_log("TicketDate id error", s.BotLogLevel.ERROR)
+
+        else:
+            buttons = browser.find_elements(By.XPATH, buttons_xpath)
+            for btn in buttons:
+                log(
+                    log.DEBUG,
+                    "Tickets [%s] for [%s]-[%s] in %s are available",
+                    tickets_count,
+                    btn.text,
+                    processing_date,
+                    floor.name,
+                )
+                btn_time, meridiem = btn.text.split()
+
+                hours = int(btn_time.split(":")[0]) + (12 if "PM" in meridiem else 0)
+                hours %= 24
+
+                minutes = int(btn_time.split(":")[1])
+
+                update_ticket_time(
+                    ticket_date, floor, datetime.time(hours, minutes), tickets_count
+                )
+            if is_booking:
+                try_click(buttons[0], browser)
+                wait.until(EC.url_to_be(CFG.RECAP_LINK))
+
+    browser.back()
 
 
 @check_canceled
