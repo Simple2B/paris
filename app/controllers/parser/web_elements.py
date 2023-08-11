@@ -88,8 +88,10 @@ def button_processing(
                     floor.name,
                 )
                 btn_time, meridiem = btn.text.split()
-                hours = int(btn_time.split(":")[0]) + 12 if "PM" in meridiem else 0
+
+                hours = int(btn_time.split(":")[0]) + (12 if "PM" in meridiem else 0)
                 hours %= 24
+
                 minutes = int(btn_time.split(":")[1])
 
                 update_ticket_time(
