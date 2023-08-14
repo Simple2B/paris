@@ -11,7 +11,9 @@ from app.logger import log
 from .celery.task_bot import bot as bot_task
 
 
-def start_bot():
+def start_bot(
+    start_date: datetime.date | None = None, end_date: datetime.date | None = None
+):
     log(log.INFO, "BOT: Start")
     with db.begin() as session:
         bot: m.Bot = session.scalar(sa.select(m.Bot))
@@ -36,7 +38,7 @@ def start_bot():
     with db.begin() as session:
         bot = session.scalar(sa.select(m.Bot))
         assert bot
-        task = bot_task.delay()
+        task = bot_task.delay(start_date, end_date)
         bot.task_id = task.id
 
 

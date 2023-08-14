@@ -15,10 +15,16 @@ from .web_elements import (
     try_click,
     click_new_choice,
     click_continue,
-    button_processing,
     get_to_month,
 )
-from .utils import sign_in, get_tickets, restart_process, get_date_info, day_increment
+from .utils import (
+    sign_in,
+    get_tickets,
+    restart_process,
+    get_date_info,
+    day_increment,
+    button_processing,
+)
 from .exceptions import ParserCanceled, ParserError
 from .tickets import date_ticket_exist, update_date_tickets_count
 from .bot_log import bot_log
@@ -26,7 +32,13 @@ from .bot_log import bot_log
 CFG = config()
 
 
-def crawler(browser: Chrome, wait: WebDriverWait):
+def crawler(
+    browser: Chrome,
+    wait: WebDriverWait,
+    start_date: date | None,
+    end_date: date | None,
+    is_booking: bool = True,
+):
     """Main function of crawler. Crawls through all available dates and collects info about tickets.
 
     Args:
@@ -37,7 +49,7 @@ def crawler(browser: Chrome, wait: WebDriverWait):
         sign_in(browser, wait)
         click_new_choice(wait)
 
-        processing_date = date.today()
+        processing_date = start_date if start_date else date.today()
 
         for month_button_clicks in range(CFG.MONTHS_PAGES_PROCESSING):
             # starts from current month and goes to the unprocessed month
@@ -77,6 +89,7 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                             tickets_count,
                             processing_date,
                             s.Floor.FIRST,
+                            is_booking,
                         )
 
                     except TimeoutException:
@@ -123,6 +136,7 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                             tickets_count,
                             processing_date,
                             s.Floor.SECOND,
+                            is_booking,
                         )
                     get_to_month(browser, wait, month_button_clicks)
 

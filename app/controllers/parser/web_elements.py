@@ -14,6 +14,7 @@ from .exceptions import check_canceled
 CFG = config()
 
 
+@check_canceled
 def wait_for_page_to_load(browser):
     while not browser.execute_script("return document.readyState === 'complete'"):
         continue
@@ -48,6 +49,7 @@ def click_new_choice(wait: WebDriverWait):
     wait.until(EC.url_to_be(CFG.NEW_ORDERS_LINK))
 
 
+@check_canceled
 def get_to_month(browser: Chrome, wait: WebDriverWait, month_button_clicks: int):
     for _ in range(month_button_clicks):
         next_month_button = wait.until(

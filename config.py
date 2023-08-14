@@ -3,7 +3,6 @@ from functools import lru_cache
 from pydantic import BaseSettings
 from flask import Flask
 from app.logger import log
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 APP_ENV = os.environ.get("APP_ENV", "development")
@@ -73,6 +72,7 @@ class BaseConfig(BaseSettings):
     EVENING_START_MINUTE: int = 0
     MORNING_START_HOUR: int = 8
     MORNING_START_MINUTE: int = 0
+    BOOKING_JOB_NAME: str = "booking "
 
     @staticmethod
     def configure(app: Flask):
@@ -92,9 +92,9 @@ class DevelopmentConfig(BaseConfig):
     ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(
         BASE_DIR, "database-dev.sqlite3"
     )
-    SCHEDULER_JOBSTORES = {
-        "default": SQLAlchemyJobStore(url=os.environ.get("DEVEL_DATABASE_URL"))
-    }
+    # SCHEDULER_JOBSTORES = {
+    #     "default": SQLAlchemyJobStore(url=os.environ.get("DEVEL_DATABASE_URL"))
+    # }
 
     BROWSER_URL: str = "http://browser.localhost:8080/"
 
@@ -114,7 +114,7 @@ class TestingConfig(BaseConfig):
     ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(
         BASE_DIR, "database-test.sqlite3"
     )
-    SCHEDULER_JOBSTORES = {"default": SQLAlchemyJobStore(url=ALCHEMICAL_DATABASE_URL)}
+    # SCHEDULER_JOBSTORES = {"default": SQLAlchemyJobStore(url=ALCHEMICAL_DATABASE_URL)}
 
     class Config:
         fields = {
@@ -133,9 +133,9 @@ class ProductionConfig(BaseConfig):
     WTF_CSRF_ENABLED = True
     BROWSER_URL: str = "http://browser.localhost:8080/"
     SELENIUM_REMOTE_DRIVER_URL: str = "http://chrome:4444/wd/hub"
-    SCHEDULER_JOBSTORES = {
-        "default": SQLAlchemyJobStore(url=os.environ.get("DATABASE_URL"))
-    }
+    # SCHEDULER_JOBSTORES = {
+    #     "default": SQLAlchemyJobStore(url=os.environ.get("DATABASE_URL"))
+    # }
 
     class Config:
         fields = {

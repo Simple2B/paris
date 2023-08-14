@@ -5,6 +5,9 @@ from flask_login import LoginManager
 from werkzeug.exceptions import HTTPException
 from flask_migrate import Migrate
 from flask_mail import Mail
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 from app.logger import log
 from .database import db
@@ -13,6 +16,7 @@ from .database import db
 login_manager = LoginManager()
 migration = Migrate()
 mail = Mail()
+scheduler: BackgroundScheduler = BackgroundScheduler()
 
 
 def create_app(environment="development"):
@@ -33,11 +37,20 @@ def create_app(environment="development"):
     app = Flask(__name__)
 
     # Set app config.
+
     env = os.environ.get("APP_ENV", environment)
     configuration = config(env)
     app.config.from_object(configuration)
     configuration.configure(app)
     log(log.INFO, "Configuration: [%s]", configuration.ENV)
+
+    JOB_STORES = {
+        "default": SQLAlchemyJobStore(url=configuration.ALCHEMICAL_DATABASE_URL)
+    }
+    scheduler.configure(jobstores=JOB_STORES)
+    scheduler.start()
+
+    log(log.INFO, "Scheduler initialized")
 
     # Set up extensions.
     db.init_app(app)
