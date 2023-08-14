@@ -21,7 +21,11 @@ def add(x: int, y: int) -> int:
 
 
 @celery.task
-def bot(start_date: datetime.date | None = None, end_date: datetime.date | None = None):
+def bot(
+    is_booking: bool,
+    start_date: datetime.date | None = None,
+    end_date: datetime.date | None = None,
+):
     """Init bot"""
     from selenium.webdriver.support.wait import WebDriverWait
     from app.controllers.parser import crawler
@@ -39,7 +43,7 @@ def bot(start_date: datetime.date | None = None, end_date: datetime.date | None 
         bot.status = s.BotStatus.UP
 
     bot_log("Goes UP")
-    crawler(browser, wait, start_date, end_date)
+    crawler(browser, wait, start_date, end_date, is_booking)
 
     bot_log("Goes DOWN")
 

@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -50,16 +50,22 @@ def crawler(
         click_new_choice(wait)
 
         processing_date = start_date if start_date else date.today()
+        end_date = (
+            end_date
+            if end_date
+            else processing_date + timedelta(weeks=CFG.MONTHS_PAGES_PROCESSING * 4)
+        )
+        month_button_clicks = processing_date.month - date.today().month
 
-        for month_button_clicks in range(CFG.MONTHS_PAGES_PROCESSING):
-            # starts from current month and goes to the unprocessed month
+        while processing_date < end_date:
             get_to_month(browser, wait, month_button_clicks)
             while True:
                 if not get_date_info(browser, wait, processing_date.day):
                     if date_ticket_exist(processing_date):
                         update_date_tickets_count(0, processing_date)
                     processing_date, new_month_flag = day_increment(processing_date)
-                    if new_month_flag:
+                    if new_month_flag or processing_date >= end_date:
+                        month_button_clicks = processing_date.month - date.today().month
                         break
                     continue
 
@@ -142,7 +148,8 @@ def crawler(
 
                     break
                 processing_date, new_month_flag = day_increment(processing_date)
-                if new_month_flag:
+                if new_month_flag or processing_date >= end_date:
+                    month_button_clicks = processing_date.month - date.today().month
                     break
                 continue
 

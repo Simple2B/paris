@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_mail import Mail
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.base import SchedulerAlreadyRunningError
 
 
 from app.logger import log
@@ -47,8 +48,11 @@ def create_app(environment="development"):
     JOB_STORES = {
         "default": SQLAlchemyJobStore(url=configuration.ALCHEMICAL_DATABASE_URL)
     }
-    scheduler.configure(jobstores=JOB_STORES)
-    scheduler.start()
+    try:
+        scheduler.configure(jobstores=JOB_STORES)
+        scheduler.start()
+    except SchedulerAlreadyRunningError:
+        log(log.INFO, "Scheduler is already running")
 
     log(log.INFO, "Scheduler initialized")
 

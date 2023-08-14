@@ -4,55 +4,9 @@
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
   <h2 class="my-5 font-bold text-gray-900 dark:text-white"> Tasks </h2>
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <form 
-    class="flex items-center justify-center py-4 bg-white dark:bg-gray-800"
-    method="post"
-    action="{{ url_for('tasks.booking') }}">
-    {{ form_hidden_tag() }}
-
-
-      
-    <div date-rangepicker class="flex items-center">
-      <div class="relative">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-            </svg>
-        </div>
-        <input name="start" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date start">
-      </div>
-      <span class="mx-4 text-gray-500">to</span>
-      <div class="relative">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-            </svg>
-        </div>
-        <input name="end" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date end">
-    </div>
-    </div>
-
-  
-      <button
-        type="submit"
-        id="book-for-period-button"
-        class="inline-flex items-center mx-4 px-6 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:blue-800">
-        Book for exact period
-      </button>
-    </form>
-
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <div class="flex justify-center mt-4 py-3">
-        <a href="{{ url_for('tasks.booking') }}">
-          <button
-            type="button"
-            id="book-all-button"
-            class="inline-flex items-center px-6 py-2 text-sm font-medium text-center text-white rounded-lg bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:red-800">
-            Book all available tickets
-          </button>
-        </a>
-      </div>
-    </div>
+    
+    {% include 'task/period_form.html' %} 
+    {% include 'task/date_form.html' %} 
 
   </div>
 </div>
