@@ -72,7 +72,7 @@ class BaseConfig(BaseSettings):
     EVENING_START_MINUTE: int = 0
     MORNING_START_HOUR: int = 8
     MORNING_START_MINUTE: int = 0
-    BOOKING_JOB_NAME: str = "booking "
+    BOOKING_JOB_NAME: str = "booking"
 
     @staticmethod
     def configure(app: Flask):

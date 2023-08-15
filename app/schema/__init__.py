@@ -2,5 +2,5 @@
 from .pagination import Pagination
 from .user import User
 from .bot import Bot, BotStatus, BotLogLevel
-from .base import Floor
-from .task import TaskStatus
+from .base import Floor, Month
+from .task import TaskStatus, Task

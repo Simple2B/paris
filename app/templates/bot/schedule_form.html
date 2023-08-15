@@ -2,7 +2,7 @@
     {{ form_hidden_tag() }}
 
     <div class="flex justify-center space-x-4">
-        <div class="relative max-w-sm">
+        <div class="relative max-w-sm flex items-center">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -15,8 +15,8 @@
                 placeholder="Select date">
         </div>
 
-        <div class="relative" data-te-with-icon="false" data-te-timepicker-init data-te-input-wrapper-init
-            id="timepicker-just-input">
+        <div class="relative flex items-center" data-te-with-icon="false" data-te-timepicker-init
+            data-te-input-wrapper-init id="timepicker-just-input">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                 <svg style="color: rgb(204, 204, 204);" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                     fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
@@ -26,11 +26,26 @@
                     </path>
                 </svg>
             </div>
-            <input type="text"  autocomplete="off"
+            <input type="text" autocomplete="off"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                data-te-toggle="timepicker-just-input" id="form15" placeholder="Time" />
-
+                data-te-toggle="timepicker-just-input" id="form15" name="time" placeholder="Time" />
         </div>
+        
+        <select name="month" class="flex-shrink-0 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+        </select>
+        
         <button type="submit" id="schedule-button"
             class="px-6 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:blue-800">
             Schedule

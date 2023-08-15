@@ -1,6 +1,7 @@
 from flask import (
     Blueprint,
     render_template,
+    flash,
     redirect,
     url_for,
 )
@@ -11,7 +12,7 @@ from app.logger import log
 from app import models as m
 from app import db
 from app import controllers as c
-
+from app.forms import ScheduleForm
 
 bot_blueprint = Blueprint("bot", __name__, url_prefix="/bot")
 
@@ -60,11 +61,21 @@ def start():
 @login_required
 def schedule():
     log(log.INFO, "bot.schedule")
-
+    schedule_form = ScheduleForm()
+    if not schedule_form.validate_on_submit():
+        flash(schedule_form.errors, "danger")
+        return redirect(url_for("bot.index"))
+    log(
+        log.INFO,
+        "Scheduling at %s - %s: %s",
+        schedule_form.day.data,
+        schedule_form.time.data,
+        schedule_form.month.data,
+    )
     return redirect(url_for("bot.index"))
 
 
-@bot_blueprint.route("/stop", methods=["GET"])
+@bot_blueprint.route("/stop", methods=["POST"])
 @login_required
 def stop():
     log(log.INFO, "bot.stop")

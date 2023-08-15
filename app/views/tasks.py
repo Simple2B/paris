@@ -13,14 +13,19 @@ from app.logger import log
 from app import controllers as c
 from app.forms import PeriodForm, DayForm
 
-
 bp = Blueprint("tasks", __name__, url_prefix="/tasks")
+
+
+def func():
+    print("Hello world")
 
 
 @bp.route("/", methods=["GET"])
 @login_required
 def index():
-    return render_template("task/index.html", tasks=[])
+    log(log.INFO, "tasks.index")
+    tasks = c.get_tasks()
+    return render_template("task/index.html", tasks=tasks)
 
 
 @bp.route("/booking_period", methods=["POST"])
