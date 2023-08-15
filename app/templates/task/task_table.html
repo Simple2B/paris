@@ -4,16 +4,26 @@
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
                 <th scope="col" class="px-6 py-3">Name</th>
+                <th scope="col" class="px-6 py-3">Next run time</th>
                 <th scope="col" class="px-6 py-3">Trigger</th>
                 <th scope="col" class="px-6 py-3">Status</th>
+                <th scope="col" class="px-6 py-3">Action</th>
             </tr>
         </thead>
         <tbody>
             {% for task in tasks %}
             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <form class="flex items-center justify-center py-4 bg-white dark:bg-gray-800"
+                method="post"
+                action="{{ url_for('tasks.delete') }}">
+                <td>
+                    <span name="task_name" class="p-4 text-base font-mono text-gray-900 whitespace-nowrap dark:text-white">
+                        {{ task.name }}
+                    </span>
+                </td>
                 <td>
                     <span class="p-4 text-base font-mono text-gray-900 whitespace-nowrap dark:text-white">
-                        {{ task.name }}
+                        {{ task.next_run_time.strftime("%m/%d/%Y, %H:%M:%S") }}
                     </span>
                 </td>
                 <td>
@@ -23,9 +33,17 @@
                 </td>
                 <td>
                     <span class="p-4 text-base font-mono text-gray-900 whitespace-nowrap dark:text-white">
-                        hardcoded status
+                        {{ task.status.value}}
                     </span>
                 </td>
+                <td>
+                    {{ form_hidden_tag() }}
+                        <button type="submit" id="delete-button" name="id" value="{{ task.id }}"
+                            class="inline-flex items-center ml-5 px-1 py-2 text-sm font-medium text-center text-white rounded-lg bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:red-blue-800">
+                            Delete
+                        </button>
+                    </td>
+                </form>
             </tr>
 
             {% endfor %}

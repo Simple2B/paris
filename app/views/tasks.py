@@ -3,6 +3,7 @@ import datetime
 from flask import (
     Blueprint,
     redirect,
+    request,
     flash,
     url_for,
     render_template,
@@ -26,6 +27,15 @@ def index():
     log(log.INFO, "tasks.index")
     tasks = c.get_tasks()
     return render_template("task/index.html", tasks=tasks)
+
+
+@bp.route("/delete", methods=["POST"])
+@login_required
+def delete():
+    id = request.form["id"]
+    c.delete_task(id)
+    log(log.INFO, "tasks.delete")
+    return redirect(url_for("tasks.index"))
 
 
 @bp.route("/booking_period", methods=["POST"])

@@ -10,3 +10,4 @@ node_modules/
 *.pyc
 /*.sqlite3
 /celerybeat-schedule.db
+yarn-error.log

@@ -12,9 +12,11 @@ class TaskStatus(enum.Enum):
 
 
 class Task(BaseModel):
+    id: str
     name: str
-    created_at: datetime.datetime
+    next_run_time: datetime.datetime
     status: TaskStatus
+    trigger: str
 
     class Config:
         orm_mode = True

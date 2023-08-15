@@ -37,12 +37,22 @@ def get_tasks():
     jobs = scheduler.get_jobs()
     tasks = []
     for job in jobs:
-        if job.name == CFG.BOOKING_JOB_NAME:
-            tasks.append(
-                s.Task(
-                    name=job.name,
-                    next_run_time=job.next_run_time,
-                    status=s.TaskStatus.AWAITING,
-                )
+        # if job.name == CFG.BOOKING_JOB_NAME:
+        tasks.append(
+            s.Task(
+                id=job.id,
+                name=job.name,
+                next_run_time=job.next_run_time,
+                status=s.TaskStatus.AWAITING,
+                trigger=str(job.trigger),
             )
+        )
     return tasks
+
+
+def delete_task(id: str):
+    if scheduler.get_job(id):
+        scheduler.remove_job(id)
+        flash("Job deleted", "success")
+    else:
+        flash("Job not found", "danger")

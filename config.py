@@ -92,9 +92,6 @@ class DevelopmentConfig(BaseConfig):
     ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(
         BASE_DIR, "database-dev.sqlite3"
     )
-    # SCHEDULER_JOBSTORES = {
-    #     "default": SQLAlchemyJobStore(url=os.environ.get("DEVEL_DATABASE_URL"))
-    # }
 
     BROWSER_URL: str = "http://browser.localhost:8080/"
 
@@ -114,7 +111,6 @@ class TestingConfig(BaseConfig):
     ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(
         BASE_DIR, "database-test.sqlite3"
     )
-    # SCHEDULER_JOBSTORES = {"default": SQLAlchemyJobStore(url=ALCHEMICAL_DATABASE_URL)}
 
     class Config:
         fields = {
@@ -133,9 +129,6 @@ class ProductionConfig(BaseConfig):
     WTF_CSRF_ENABLED = True
     BROWSER_URL: str = "http://browser.localhost:8080/"
     SELENIUM_REMOTE_DRIVER_URL: str = "http://chrome:4444/wd/hub"
-    # SCHEDULER_JOBSTORES = {
-    #     "default": SQLAlchemyJobStore(url=os.environ.get("DATABASE_URL"))
-    # }
 
     class Config:
         fields = {
