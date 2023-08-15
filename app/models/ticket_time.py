@@ -9,7 +9,7 @@ from app import schema as s
 from .ticket_date import TicketDate
 
 
-class TicketTime(db.Model, ModelMixin):
+class TicketTime(db.Model, ModelMixin):  # type: ignore
     __tablename__ = "tickets_time"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
@@ -27,6 +27,11 @@ class TicketTime(db.Model, ModelMixin):
     ticket_date: orm.Mapped[TicketDate] = orm.relationship(
         "TicketDate", backref="tickets_time"
     )
+
+    @property
+    def json(self):
+        data = s.TicketTimeSchema.from_orm(self)
+        return data.json(by_alias=True)
 
     def __repr__(self):
         return f"<{self.id}:{self.ticket_date.date}:{self.clock}:{self.floor}:{self.tickets}>"

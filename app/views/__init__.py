@@ -6,3 +6,4 @@ from .bot import bot_blueprint
 from .ticket import bp as ticket_blueprint
 from .dashboard import bp as dashboard_blueprint
 from .tasks import bp as tasks_blueprint
+from .ticket_order import bp as ticket_order_blueprint

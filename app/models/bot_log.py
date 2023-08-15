@@ -9,7 +9,7 @@ from app import schema as s
 from .bot import Bot
 
 
-class BotLog(db.Model, ModelMixin):
+class BotLog(db.Model, ModelMixin):  # type: ignore
     __tablename__ = "bot_logs"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)

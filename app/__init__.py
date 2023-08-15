@@ -30,7 +30,6 @@ def create_app(environment="development"):
         bot_blueprint,
         ticket_blueprint,
         dashboard_blueprint,
-        tasks_blueprint,
     )
     from app import models as m
 
@@ -69,7 +68,6 @@ def create_app(environment="development"):
     app.register_blueprint(bot_blueprint)
     app.register_blueprint(ticket_blueprint)
     app.register_blueprint(dashboard_blueprint)
-    app.register_blueprint(tasks_blueprint)
 
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
 
