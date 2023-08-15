@@ -147,7 +147,7 @@ def prepare_tickets(browser: Chrome, wait: WebDriverWait) -> str | None:
     )
     if not available_dates:
         bot_log("No available dates", s.BotLogLevel.WARNING)
-        return
+        return None
 
     filtered_dates = [
         date_element
@@ -161,7 +161,7 @@ def prepare_tickets(browser: Chrome, wait: WebDriverWait) -> str | None:
     ]
     if len(disabled_dates) == len(available_dates):
         bot_log("No available dates", s.BotLogLevel.WARNING)
-        return
+        return None
 
     elif len(filtered_dates) == 0:
         filtered_dates = [

@@ -63,7 +63,7 @@ def button_processing(
     browser: Chrome,
     tickets_count: int,
     processing_date: date,
-    floor: str,
+    floor: s.Floor,
 ):
     # TODO: check network traffic
     update_date_tickets_count(tickets_count, processing_date)
