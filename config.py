@@ -1,24 +1,30 @@
 import os
+import tomllib
+import pathlib
 from functools import lru_cache
 from pydantic import BaseSettings
 from flask import Flask
 from app.logger import log
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = pathlib.Path(__file__).parent.absolute()
+_project_toml = tomllib.loads((BASE_DIR / "pyproject.toml").read_text())
+APP_VERSION = _project_toml["tool"]["poetry"]["version"]
+
 APP_ENV = os.environ.get("APP_ENV", "development")
 
 
 class BaseConfig(BaseSettings):
     """Base configuration."""
 
-    TESTING: bool = False
-
     ENV: str = "base"
     APP_NAME: str = "Paris Ticket Pro"
+    APP_VERSION: str = APP_VERSION
     LOG_LEVEL: int = log.INFO
     SECRET_KEY: str
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
     WTF_CSRF_ENABLED: bool = False
+
+    TESTING: bool = False
 
     # Mail config
     MAIL_SERVER: str

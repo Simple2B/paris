@@ -21,7 +21,7 @@ jobs:
       matrix:
         python-version: [3.11]
         poetry-version: [1.5.1]
-        os: [ubuntu-latest]
+        os: [Linux]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -49,7 +49,7 @@ jobs:
         run: |
           poetry run pytest
   build:
-    runs-on: ubuntu-latest
+    runs-on: Linux
     needs: test
     steps:
       - name: Checkout
