@@ -5,3 +5,4 @@ from .user import bp as user_blueprint
 from .bot import bot_blueprint
 from .ticket import bp as ticket_blueprint
 from .dashboard import bp as dashboard_blueprint
+from .ticket_order import bp as ticket_order_blueprint

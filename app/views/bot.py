@@ -70,3 +70,10 @@ def stop():
 def reset_log():
     c.reset_bot_log()
     return redirect(url_for("bot.index"))
+
+
+@bot_blueprint.route("/reset", methods=["GET"])
+@login_required
+def reset():
+    c.reset_bot()
+    return redirect(url_for("bot.index"))

@@ -28,5 +28,10 @@ class TicketTime(db.Model, ModelMixin):  # type: ignore
         "TicketDate", backref="tickets_time"
     )
 
+    @property
+    def json(self):
+        data = s.TicketTimeSchema.from_orm(self)
+        return data.json(by_alias=True)
+
     def __repr__(self):
         return f"<{self.id}:{self.ticket_date.date}:{self.clock}:{self.floor}:{self.tickets}>"
