@@ -11,3 +11,8 @@ node_modules/
 /*.sqlite3
 /celerybeat-schedule.db
 yarn-error.log
+
+app/static/js/309.bot.js
+app/static/js/309.bot.js.LICENSE.txt
+app/static/js/697.bot.js
+app/static/js/697.bot.js.LICENSE.txt
