@@ -6,7 +6,7 @@ from .utils import ModelMixin
 from app import schema as s
 
 
-class Bot(db.Model, ModelMixin):
+class Bot(db.Model, ModelMixin):  # type: ignore
     __tablename__ = "bot"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)

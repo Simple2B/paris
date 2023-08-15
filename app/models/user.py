@@ -4,7 +4,6 @@ from uuid import uuid4
 from flask_login import UserMixin, AnonymousUserMixin
 import sqlalchemy as sa
 from sqlalchemy import orm
-from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.database import db
@@ -17,7 +16,7 @@ def gen_password_reset_id() -> str:
     return str(uuid4())
 
 
-class User(db.Model, UserMixin, ModelMixin):
+class User(db.Model, UserMixin, ModelMixin):  # type: ignore
     __tablename__ = "users"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
@@ -45,7 +44,7 @@ class User(db.Model, UserMixin, ModelMixin):
         default=gen_password_reset_id,
     )
 
-    @hybrid_property
+    @property
     def password(self):
         return self.password_hash
 

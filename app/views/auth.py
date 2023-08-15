@@ -42,13 +42,15 @@ def logout():
 @auth_blueprint.route("/activated/<reset_password_uid>")
 @login_required
 def activate(reset_password_uid):
-    if not current_user.is_authenticated:
+    current_user: m.User = current_user
+    if not current_user or not current_user.is_authenticated:
         log(log.WARNING, "Authentication error")
 
         return redirect(url_for("main.index"))
 
-    query = m.User.select().where(m.User.unique_id == reset_password_uid)
-    user: m.User | None = db.session.scalar(query)
+    user = db.session.scalar(
+        m.User.select().where(m.User.unique_id == reset_password_uid)
+    )
 
     if not user:
         log(log.INFO, "User not found")

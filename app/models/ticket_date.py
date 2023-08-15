@@ -7,7 +7,7 @@ from app.database import db
 from .utils import ModelMixin
 
 
-class TicketDate(db.Model, ModelMixin):
+class TicketDate(db.Model, ModelMixin):  # type: ignore
     __tablename__ = "tickets_date"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)

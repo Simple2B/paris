@@ -9,7 +9,7 @@ from app import schema as s
 from .ticket_date import TicketDate
 
 
-class TicketTime(db.Model, ModelMixin):
+class TicketTime(db.Model, ModelMixin):  # type: ignore
     __tablename__ = "tickets_time"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
