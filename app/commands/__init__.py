@@ -50,7 +50,7 @@ def init(app: Flask):
     def db_tickets_populate(days: int):
         """Fill DB by dummy data."""
 
-        from .test_tickets_gen import get_random_tickets
+        from .tickets_gen import get_random_tickets
 
         TODAY = datetime.date.today()
         for i in range(0, days):
