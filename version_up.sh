@@ -31,6 +31,7 @@ new_version=$(poetry version -s)
 npm version --no-git-tag-version $new_version
 
 # Build UI
+yarn
 yarn build
 
 # Commit the change
