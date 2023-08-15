@@ -20,7 +20,10 @@ mail = Mail()
 scheduler: BackgroundScheduler = BackgroundScheduler()
 
 
-def create_app(environment="development"):
+def create_app(environment=None):
+    """Create Flask application."""
+    if not environment:
+        environment = os.environ.get("APP_ENV", "development")
     from config import config
     from app.controllers.jinja_globals import form_hidden_tag
     from app.views import (
@@ -44,17 +47,17 @@ def create_app(environment="development"):
     app.config.from_object(configuration)
     configuration.configure(app)
     log(log.INFO, "Configuration: [%s]", configuration.ENV)
+    if not configuration.TESTING:
+        JOB_STORES = {
+            "default": SQLAlchemyJobStore(url=configuration.ALCHEMICAL_DATABASE_URL)
+        }
+        try:
+            scheduler.configure(jobstores=JOB_STORES)
+            scheduler.start()
+        except SchedulerAlreadyRunningError:
+            log(log.INFO, "Scheduler is already running")
 
-    JOB_STORES = {
-        "default": SQLAlchemyJobStore(url=configuration.ALCHEMICAL_DATABASE_URL)
-    }
-    try:
-        scheduler.configure(jobstores=JOB_STORES)
-        scheduler.start()
-    except SchedulerAlreadyRunningError:
-        log(log.INFO, "Scheduler is already running")
-
-    log(log.INFO, "Scheduler initialized")
+        log(log.INFO, "Scheduler initialized")
 
     # Set up extensions.
     db.init_app(app)

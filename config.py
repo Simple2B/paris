@@ -11,6 +11,8 @@ APP_ENV = os.environ.get("APP_ENV", "development")
 class BaseConfig(BaseSettings):
     """Base configuration."""
 
+    TESTING: bool = False
+
     ENV: str = "base"
     APP_NAME: str = "Paris Ticket Pro"
     LOG_LEVEL: int = log.INFO
