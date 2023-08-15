@@ -35,6 +35,8 @@ def booking_period():
 
     c.start_bot(is_booking=True, start_date=start, end_date=end)
     log(log.INFO, "Booking task sended")
+    flash("Booking task sended", "success")
+
     return redirect(url_for("tasks.index"))
 
 
@@ -51,10 +53,5 @@ def booking_day():
 
     c.start_bot(is_booking=True, start_date=start, end_date=end)
     log(log.INFO, "Booking task sended")
+    flash("Booking task sended", "success")
     return redirect(url_for("tasks.index"))
-
-
-@bp.route("/buy/<int:ticket_date_id>", methods=["GET"])
-@login_required
-def buy(ticket_date_id: int):
-    pass

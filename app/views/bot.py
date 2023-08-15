@@ -56,6 +56,14 @@ def start():
     return redirect(url_for("bot.index"))
 
 
+@bot_blueprint.route("/schedule", methods=["POST"])
+@login_required
+def schedule():
+    log(log.INFO, "bot.schedule")
+
+    return redirect(url_for("bot.index"))
+
+
 @bot_blueprint.route("/stop", methods=["GET"])
 @login_required
 def stop():

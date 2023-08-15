@@ -19,6 +19,7 @@ def test_book_tickets(populate: FlaskClient):
     )
 
     assert response.status_code == 200
+    assert "Booking task sended" in response.text
 
     date = start_date + datetime.timedelta(days=1)
     response = populate.post(
@@ -30,6 +31,7 @@ def test_book_tickets(populate: FlaskClient):
     )
 
     assert response.status_code == 200
+    assert "Booking task sended" in response.text
 
     date = start_date - datetime.timedelta(days=5)
     response = populate.post(
