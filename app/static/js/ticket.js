@@ -1,10 +1,1 @@
-/******/ (() => { // webpackBootstrap
-var __webpack_exports__ = {};
-/*!***********************!*\
-  !*** ./src/ticket.ts ***!
-  \***********************/
-// ticket.ts
-
-/******/ })()
-;
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoianMvdGlja2V0LmpzIiwibWFwcGluZ3MiOiI7Ozs7O0FBQUEsWUFBWSIsInNvdXJjZXMiOlsid2VicGFjazovL3BhcmlzLnNpbXBsZTJiLy4vc3JjL3RpY2tldC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvLyB0aWNrZXQudHNcbiJdLCJuYW1lcyI6W10sInNvdXJjZVJvb3QiOiIifQ==
+document.addEventListener("DOMContentLoaded",(function(){var t=document.querySelectorAll('[data-modal-toggle="add-ticket-modal"]'),e=document.getElementById("floorNamePlaceholder"),d=document.getElementById("timePlaceholder"),n=document.getElementById("timeHiddenInput"),a=document.getElementById("dateHiddenInput");t.forEach((function(t){t.addEventListener("click",(function(){var o=t.getAttribute("data-target"),c=t.getAttribute("data-target-date-id"),l=JSON.parse(o),i=l.clock.split(":"),r=i[0],u=i[1];e.textContent=l.floor,d.textContent="".concat(r,":").concat(u),n.value=l.id,a.value=c}))}))}));
