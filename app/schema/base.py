@@ -2,20 +2,20 @@ import enum
 
 
 class Floor(enum.Enum):
-    FIRST: str = "FIRST"
-    SECOND: str = "SECOND"
+    FIRST = "FIRST"
+    SECOND = "SECOND"
 
 
 class Month(enum.Enum):
-    JANUARY: str = "JANUARY"
-    FEBRUARY: str = "FEBRUARY"
-    MARCH: str = "MARCH"
-    APRIL: str = "APRIL"
-    MAY: str = "MAY"
-    JUNE: str = "JUNE"
-    JULY: str = "JULY"
-    AUGUST: str = "AUGUST"
-    SEPTEMBER: str = "SEPTEMBER"
-    OCTOBER: str = "OCTOBER"
-    NOVEMBER: str = "NOVEMBER"
-    DECEMBER: str = "DECEMBER"
+    JANUARY = "JANUARY"
+    FEBRUARY = "FEBRUARY"
+    MARCH = "MARCH"
+    APRIL = "APRIL"
+    MAY = "MAY"
+    JUNE = "JUNE"
+    JULY = "JULY"
+    AUGUST = "AUGUST"
+    SEPTEMBER = "SEPTEMBER"
+    OCTOBER = "OCTOBER"
+    NOVEMBER = "NOVEMBER"
+    DECEMBER = "DECEMBER"

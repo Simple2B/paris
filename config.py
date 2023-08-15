@@ -73,6 +73,7 @@ class BaseConfig(BaseSettings):
     MORNING_START_HOUR: int = 8
     MORNING_START_MINUTE: int = 0
     BOOKING_JOB_NAME: str = "booking"
+    MONTHS_NEXT_SELECTOR_COUNT: int = 6
 
     @staticmethod
     def configure(app: Flask):
