@@ -1,4 +1,5 @@
 import datetime
+import time
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -197,6 +198,7 @@ def get_date_info(browser: Chrome, wait: WebDriverWait, day: int) -> bool:
                 )
             )
         )
+        time.sleep(0.5)
     except TimeoutException:
         bot_log(
             f"Day [{day}] is not available (due to TimeoutException)",

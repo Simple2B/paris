@@ -55,7 +55,12 @@ def crawler(
             if end_date
             else processing_date + timedelta(weeks=CFG.MONTHS_PAGES_PROCESSING * 4)
         )
-        month_button_clicks = processing_date.month - date.today().month
+
+        month_button_clicks = (
+            processing_date.month
+            - date.today().month
+            + 12 * (processing_date.year - date.today().year)
+        )
 
         while processing_date < end_date:
             get_to_month(browser, wait, month_button_clicks)
@@ -65,7 +70,11 @@ def crawler(
                         update_date_tickets_count(0, processing_date)
                     processing_date, new_month_flag = day_increment(processing_date)
                     if new_month_flag or processing_date >= end_date:
-                        month_button_clicks = processing_date.month - date.today().month
+                        month_button_clicks = (
+                            processing_date.month
+                            - date.today().month
+                            + 12 * (processing_date.year - date.today().year)
+                        )
                         break
                     continue
 
@@ -153,7 +162,7 @@ def crawler(
                     break
                 continue
 
-        bot_log(f"All {CFG.MONTHS_PAGES_PROCESSING} months are processed")
+        bot_log("Bot process finished")
 
     except ParserCanceled:
         bot_log("Parser CANCELED")

@@ -72,10 +72,17 @@ def schedule():
         schedule_form.time.data,
         schedule_form.month.data,
     )
+    flash(
+        f"Scheduling at {schedule_form.day.data} - {schedule_form.time.data}: {schedule_form.month.data}",
+        "success",
+    )
+    c.add_task_booking(
+        schedule_form.day.data, schedule_form.time.data, schedule_form.month.data
+    )
     return redirect(url_for("bot.index"))
 
 
-@bot_blueprint.route("/stop", methods=["POST"])
+@bot_blueprint.route("/stop", methods=["GET"])
 @login_required
 def stop():
     log(log.INFO, "bot.stop")

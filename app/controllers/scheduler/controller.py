@@ -14,16 +14,17 @@ CFG = config()
 def add_task_booking(date: datetime.date, time: datetime.time, month: str):
     jobs = scheduler.get_jobs()
 
-    month = [mn.name for mn in s.Month].index(month.upper())
-    start_date = datetime.date(year=date.year, month=month, day=1)
+    month_index = [mn.name for mn in s.Month].index(month.upper()) + 1
+    start_date = datetime.date(year=date.year, month=month_index, day=1)
 
     # scheduler should add job if only there is no job with the same date and time
     for job in jobs:
         if job.name == CFG.BOOKING_JOB_NAME:
             if job.next_run_time.date() == date and job.next_run_time.time() == time:
-                flash("Job already exists", "danger")
-                log(log.WARNING, "Job already exists")
+                flash("This time slot already booked", "danger")
+                log(log.WARNING, "This time slot already booked")
                 return
+
     scheduler.add_job(
         start_bot,
         "date",
@@ -31,6 +32,7 @@ def add_task_booking(date: datetime.date, time: datetime.time, month: str):
         name=CFG.BOOKING_JOB_NAME,
         args=[True, start_date, start_date + datetime.timedelta(weeks=4)],
     )
+    log(log.INFO, "Booking job added at %s - %s: %s", date, time, month)
 
 
 def get_tasks():
