@@ -2,12 +2,9 @@ import flask
 from celery import Celery
 
 from config import config
-from app.logger import log
 from app import create_app
 
 settings = config()
-
-log(log.INFO, "REDIS_URL: [%s]", settings.REDIS_URL)
 
 
 class FlaskCelery(Celery):

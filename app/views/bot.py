@@ -1,6 +1,9 @@
+import datetime
+
 from flask import (
     Blueprint,
     render_template,
+    flash,
     redirect,
     url_for,
 )
@@ -11,6 +14,13 @@ from app.logger import log
 from app import models as m
 from app import db
 from app import controllers as c
+from app import schema as s
+from app import scheduler
+from app.forms import ScheduleForm
+from config import config
+
+CFG = config()
+ALL_MONTHS = [mn.value for mn in s.Month]
 
 
 bot_blueprint = Blueprint("bot", __name__, url_prefix="/bot")
@@ -32,11 +42,35 @@ def index():
             pagination.per_page
         )
     ).all()
+    job = scheduler.get_job(job_id=CFG.BOOKING_JOB_NAME)
+
+    month = datetime.date.today().month
+    months = list()
+    for i in range(CFG.MONTHS_NEXT_SELECTOR_COUNT):
+        months += [ALL_MONTHS[(month + i) % 12]]
+
+    if job:
+        scheduler_date = job.next_run_time.date().strftime("%m/%d/%Y")
+        scheduler_time = job.next_run_time.time().strftime("%I:%M %p")
+
+        scheduler_month = ALL_MONTHS[job.args[1].month - 1]
+
+        return render_template(
+            "bot/index.html",
+            bot=c.get_bot(),
+            bot_logs=bot_logs,
+            page=pagination,
+            scheduler_date=scheduler_date,
+            scheduler_time=scheduler_time,
+            scheduler_month=scheduler_month,
+            months=months,
+        )
     return render_template(
         "bot/index.html",
         bot=c.get_bot(),
         bot_logs=bot_logs,
         page=pagination,
+        months=months,
     )
 
 
@@ -53,6 +87,31 @@ def refresh():
 def start():
     log(log.INFO, "bot.start")
     c.start_bot()
+    return redirect(url_for("bot.index"))
+
+
+@bot_blueprint.route("/schedule", methods=["POST"])
+@login_required
+def schedule():
+    log(log.INFO, "bot.schedule")
+    schedule_form = ScheduleForm()
+    if not schedule_form.validate_on_submit():
+        flash(schedule_form.errors, "danger")
+        return redirect(url_for("bot.index"))
+    log(
+        log.INFO,
+        "Scheduling at %s - %s: %s",
+        schedule_form.day.data,
+        schedule_form.time.data,
+        schedule_form.month.data,
+    )
+    flash(
+        f"Scheduling at {schedule_form.day.data} - {schedule_form.time.data}: {schedule_form.month.data}",
+        "success",
+    )
+    c.add_task_booking(
+        schedule_form.day.data, schedule_form.time.data, schedule_form.month.data
+    )
     return redirect(url_for("bot.index"))
 
 

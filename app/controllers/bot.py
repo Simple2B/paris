@@ -11,7 +11,11 @@ from app.logger import log
 from .celery.task_bot import bot as bot_task
 
 
-def start_bot():
+def start_bot(
+    is_booking: bool = False,
+    start_date: datetime.date | None = None,
+    end_date: datetime.date | None = None,
+):
     log(log.INFO, "BOT: Start")
     with db.begin() as session:
         bot: m.Bot = session.scalar(sa.select(m.Bot))
@@ -23,6 +27,13 @@ def start_bot():
             log(log.WARNING, "BOT: Wrong status [%s]", bot.status.name)
             flash(f"BOT: Wrong status [{bot.status.name}]", "danger")
             return
+
+        ids = session.scalars(
+            sa.select(m.TicketDate.id).where(m.TicketDate.date < datetime.date.today())
+        ).all()
+        session.execute(
+            sa.delete(m.TicketTime).where(m.TicketTime.ticket_date_id.in_(ids))
+        )
 
         session.execute(
             sa.delete(m.TicketDate).where(m.TicketDate.date < datetime.date.today())
@@ -36,7 +47,7 @@ def start_bot():
     with db.begin() as session:
         bot = session.scalar(sa.select(m.Bot))
         assert bot
-        task = bot_task.delay()
+        task = bot_task.delay(is_booking, start_date, end_date)
         bot.task_id = task.id
 
 

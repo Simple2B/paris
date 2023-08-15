@@ -11,6 +11,8 @@ APP_ENV = os.environ.get("APP_ENV", "development")
 class BaseConfig(BaseSettings):
     """Base configuration."""
 
+    TESTING: bool = False
+
     ENV: str = "base"
     APP_NAME: str = "Paris Ticket Pro"
     LOG_LEVEL: int = log.INFO
@@ -66,6 +68,14 @@ class BaseConfig(BaseSettings):
     MONTHS_PAGES_PROCESSING = 3
     TICKETS_PER_DAY = 50
     MAX_RETRY_LOGIN_COUNT = 5
+
+    # Scheduler
+    EVENING_START_HOUR: int = 18
+    EVENING_START_MINUTE: int = 0
+    MORNING_START_HOUR: int = 8
+    MORNING_START_MINUTE: int = 0
+    BOOKING_JOB_NAME: str = "booking"
+    MONTHS_NEXT_SELECTOR_COUNT: int = 6
 
     @staticmethod
     def configure(app: Flask):

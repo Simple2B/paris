@@ -5,6 +5,10 @@ from flask_login import LoginManager
 from werkzeug.exceptions import HTTPException
 from flask_migrate import Migrate
 from flask_mail import Mail
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.base import SchedulerAlreadyRunningError
+
 
 from app.logger import log
 from .database import db
@@ -13,9 +17,13 @@ from .database import db
 login_manager = LoginManager()
 migration = Migrate()
 mail = Mail()
+scheduler: BackgroundScheduler = BackgroundScheduler()
 
 
-def create_app(environment="development"):
+def create_app(environment=None):
+    """Create Flask application."""
+    if not environment:
+        environment = os.environ.get("APP_ENV", "development")
     from config import config
     from app.controllers.jinja_globals import form_hidden_tag
     from app.views import (
@@ -25,7 +33,7 @@ def create_app(environment="development"):
         bot_blueprint,
         ticket_blueprint,
         dashboard_blueprint,
-        ticket_order_blueprint,
+        tasks_blueprint,
     )
     from app import models as m
 
@@ -33,11 +41,23 @@ def create_app(environment="development"):
     app = Flask(__name__)
 
     # Set app config.
+
     env = os.environ.get("APP_ENV", environment)
     configuration = config(env)
     app.config.from_object(configuration)
     configuration.configure(app)
     log(log.INFO, "Configuration: [%s]", configuration.ENV)
+    if not configuration.TESTING:
+        JOB_STORES = {
+            "default": SQLAlchemyJobStore(url=configuration.ALCHEMICAL_DATABASE_URL)
+        }
+        try:
+            scheduler.configure(jobstores=JOB_STORES)
+            scheduler.start()
+        except SchedulerAlreadyRunningError:
+            log(log.INFO, "Scheduler is already running")
+
+        log(log.INFO, "Scheduler initialized")
 
     # Set up extensions.
     db.init_app(app)
@@ -52,7 +72,7 @@ def create_app(environment="development"):
     app.register_blueprint(bot_blueprint)
     app.register_blueprint(ticket_blueprint)
     app.register_blueprint(dashboard_blueprint)
-    app.register_blueprint(ticket_order_blueprint)
+    app.register_blueprint(tasks_blueprint)
 
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
 

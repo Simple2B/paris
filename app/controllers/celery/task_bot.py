@@ -1,3 +1,5 @@
+import datetime
+
 import sqlalchemy as sa
 
 from .celery_flask import celery_app as celery
@@ -19,7 +21,11 @@ def add(x: int, y: int) -> int:
 
 
 @celery.task
-def bot() -> None:
+def bot(
+    is_booking: bool,
+    start_date: datetime.date | None = None,
+    end_date: datetime.date | None = None,
+):
     """Init bot"""
     from selenium.webdriver.support.wait import WebDriverWait
     from app.controllers.parser import crawler
@@ -37,7 +43,7 @@ def bot() -> None:
         bot.status = s.BotStatus.UP
 
     bot_log("Goes UP")
-    crawler(browser, wait)
+    crawler(browser, wait, start_date, end_date, is_booking)
 
     bot_log("Goes DOWN")
 

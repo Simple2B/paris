@@ -66,7 +66,17 @@ const botConfig = {
   },
 };
 
-const configs = [baseConfig, userConfig, ticketConfig, dashboardConfig, botConfig].map(conf =>
+const taskConfig = {
+  entry: {
+    main: './src/task.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/task.js', // <--- Will be compiled to this single file
+  },
+};
+
+const configs = [baseConfig, userConfig, ticketConfig, dashboardConfig, botConfig, taskConfig].map(conf =>
   merge(defaultConfig, conf),
 );
 

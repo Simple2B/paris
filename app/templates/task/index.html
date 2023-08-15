@@ -1,0 +1,27 @@
+<!-- prettier-ignore -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <h2 class="my-5 font-bold text-gray-900 dark:text-white"> Tasks </h2>
+  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <input type="status" value="Manual booking"readonly
+      class="bg-gray-50 border text-center border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+    {% include 'task/period_form.html' %} 
+    {% include 'task/date_form.html' %} 
+  </div>
+
+</div>
+
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  {% include 'task/task_table.html' %} 
+</div>
+
+{% endblock %}
+<!-- prettier-ignore -->
+{% block scripts %}
+<script
+  src="{{ url_for('static', filename='js/task.js') }}"
+  type="text/javascript"
+  defer></script>
+
+{% endblock %}

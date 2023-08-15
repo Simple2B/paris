@@ -11,9 +11,11 @@
     "**/.venv/*/**": true
   },
   "cSpell.words": [
+    "apscheduler",
     "autoconnect",
     "backref",
     "flowbite",
+    "jobstores",
     "jsonify",
     "onupdate",
     "pydantic",

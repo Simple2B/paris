@@ -1,4 +1,5 @@
 import datetime
+import time
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -9,9 +10,16 @@ from selenium.common.exceptions import (
 from selenium.webdriver import Chrome
 
 from app.logger import log
+from app import models as m
 from app import schema as s
+from app import db
 from config import config
-from .web_elements import try_click, click_new_choice, wait_for_page_to_load
+from .web_elements import (
+    try_click,
+    click_new_choice,
+    wait_for_page_to_load,
+)
+from .tickets import update_date_tickets_count, update_ticket_time
 from .exceptions import check_canceled
 from .bot_log import bot_log
 
@@ -37,25 +45,33 @@ def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
             log(log.DEBUG, "Logged in successfully (via session)")
             break
         except TimeoutException:
-            bot_log("Session login expired. Logging in again", s.BotLogLevel.WARNING)
-        identify_input = wait.until(EC.presence_of_element_located((By.ID, "userId")))
-        password_input = browser.find_element(By.ID, "loginPassword")
-
-        identify_input.send_keys(CFG.TTP_IDENTIFICATOR)
-        password_input.send_keys(CFG.TTP_PASSWORD)
-
-        login_button = wait.until(EC.presence_of_element_located((By.ID, "log_to_b2b")))
-        try_click(login_button, browser)
+            bot_log("Session login expired. Logging in again", s.BotLogLevel.INFO)
         try:
-            wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
-        except TimeoutException:
-            bot_log(
-                f"Login failed. Rerunning [{attempts + 1}] ...",
-                s.BotLogLevel.ERROR,
+            identify_input = wait.until(
+                EC.presence_of_element_located((By.ID, "userId"))
             )
-            attempts += 1
-            continue
-        break
+            password_input = browser.find_element(By.ID, "loginPassword")
+
+            identify_input.send_keys(CFG.TTP_IDENTIFICATOR)
+            password_input.send_keys(CFG.TTP_PASSWORD)
+
+            login_button = wait.until(
+                EC.presence_of_element_located((By.ID, "log_to_b2b"))
+            )
+            try_click(login_button, browser)
+            try:
+                wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
+            except TimeoutException:
+                bot_log(
+                    f"Login failed. Rerunning [{attempts + 1}] ...",
+                    s.BotLogLevel.ERROR,
+                )
+                attempts += 1
+                continue
+            break
+        except TimeoutException:
+            bot_log("Session login expired. Logging in again", s.BotLogLevel.INFO)
+            wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
 
     if attempts == CFG.MAX_RETRY_LOGIN_COUNT:
         bot_log("Login failed", s.BotLogLevel.ERROR)
@@ -66,9 +82,68 @@ def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
 
 
 @check_canceled
+def button_processing(
+    buttons_xpath: str,
+    wait: WebDriverWait,
+    browser: Chrome,
+    tickets_count: int,
+    processing_date: datetime.date,
+    floor: str,
+    is_booking: bool = False,
+):
+    # TODO: check network traffic
+    update_date_tickets_count(tickets_count, processing_date)
+
+    with db.begin() as session:
+        ticket_date = session.scalar(
+            m.TicketDate.select().where(m.TicketDate.date == processing_date)
+        )
+
+        buttons = browser.find_elements(By.XPATH, buttons_xpath)
+        for btn in buttons:
+            log(
+                log.DEBUG,
+                "Tickets [%s] for [%s]-[%s] in %s are available",
+                tickets_count,
+                btn.text,
+                processing_date,
+                floor.name,
+            )
+            btn_time, meridiem = btn.text.split()
+
+            hours = int(btn_time.split(":")[0]) + (12 if "PM" in meridiem else 0)
+            hours %= 24
+
+            minutes = int(btn_time.split(":")[1])
+
+            update_ticket_time(
+                ticket_date, floor, datetime.time(hours, minutes), tickets_count
+            )
+
+        if is_booking:
+            btn_time, meridiem = buttons[0].text.split()
+
+            hours = int(btn_time.split(":")[0]) + (12 if "PM" in meridiem else 0)
+            hours %= 24
+
+            minutes = int(btn_time.split(":")[1])
+
+            try_click(buttons[0], browser)
+            wait.until(EC.url_to_be(CFG.RECAP_LINK))
+            bot_log(
+                f"Booked - {ticket_date}, {floor}, {datetime.time(hours, minutes)}, {tickets_count} tickets",
+            )
+            browser.execute_script("window.open('', '_blank')")
+            browser.switch_to.window(browser.window_handles[-1])
+            sign_in(browser, wait)
+            click_new_choice(wait)
+        else:
+            browser.back()
+
+
+@check_canceled
 def restart_process(browser: Chrome, wait: WebDriverWait, month_button_clicks: int):
     """Restarts process (in same tab) in case of error.
-
 
     Args:
         browser (Chrome): instance of driver
@@ -80,7 +155,7 @@ def restart_process(browser: Chrome, wait: WebDriverWait, month_button_clicks: i
     browser.execute_script("window.open('', '_blank')")
     browser.close()
     windows = browser.window_handles
-    browser.switch_to.window(windows[0])
+    browser.switch_to.window(windows[-1])
 
     browser.get(CFG.LOGIN_PAGE_LINK)
     try:
@@ -123,6 +198,7 @@ def get_date_info(browser: Chrome, wait: WebDriverWait, day: int) -> bool:
                 )
             )
         )
+        time.sleep(0.5)
     except TimeoutException:
         bot_log(
             f"Day [{day}] is not available (due to TimeoutException)",
@@ -223,6 +299,7 @@ def get_tickets(
     return tickets_count
 
 
+@check_canceled
 def day_increment(processing_date: datetime.date) -> tuple[datetime.date, bool]:
     """Increments day in processing_date.
     Returns (datetime.date, True) if month has changed, (datetime.date, False) otherwise

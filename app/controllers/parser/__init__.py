@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -15,10 +15,16 @@ from .web_elements import (
     try_click,
     click_new_choice,
     click_continue,
-    button_processing,
     get_to_month,
 )
-from .utils import sign_in, get_tickets, restart_process, get_date_info, day_increment
+from .utils import (
+    sign_in,
+    get_tickets,
+    restart_process,
+    get_date_info,
+    day_increment,
+    button_processing,
+)
 from .exceptions import ParserCanceled, ParserError
 from .tickets import date_ticket_exist, update_date_tickets_count
 from .bot_log import bot_log
@@ -26,7 +32,13 @@ from .bot_log import bot_log
 CFG = config()
 
 
-def crawler(browser: Chrome, wait: WebDriverWait):
+def crawler(
+    browser: Chrome,
+    wait: WebDriverWait,
+    start_date: date | None,
+    end_date: date | None,
+    is_booking: bool = True,
+):
     """Main function of crawler. Crawls through all available dates and collects info about tickets.
 
     Args:
@@ -37,17 +49,32 @@ def crawler(browser: Chrome, wait: WebDriverWait):
         sign_in(browser, wait)
         click_new_choice(wait)
 
-        processing_date = date.today()
+        processing_date = start_date if start_date else date.today()
+        end_date = (
+            end_date
+            if end_date
+            else processing_date + timedelta(weeks=CFG.MONTHS_PAGES_PROCESSING * 4)
+        )
 
-        for month_button_clicks in range(CFG.MONTHS_PAGES_PROCESSING):
-            # starts from current month and goes to the unprocessed month
+        month_button_clicks = (
+            processing_date.month
+            - date.today().month
+            + 12 * (processing_date.year - date.today().year)
+        )
+
+        while processing_date < end_date:
             get_to_month(browser, wait, month_button_clicks)
             while True:
                 if not get_date_info(browser, wait, processing_date.day):
                     if date_ticket_exist(processing_date):
                         update_date_tickets_count(0, processing_date)
                     processing_date, new_month_flag = day_increment(processing_date)
-                    if new_month_flag:
+                    if new_month_flag or processing_date >= end_date:
+                        month_button_clicks = (
+                            processing_date.month
+                            - date.today().month
+                            + 12 * (processing_date.year - date.today().year)
+                        )
                         break
                     continue
 
@@ -77,6 +104,7 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                             tickets_count,
                             processing_date,
                             s.Floor.FIRST,
+                            is_booking,
                         )
 
                     except TimeoutException:
@@ -123,16 +151,18 @@ def crawler(browser: Chrome, wait: WebDriverWait):
                             tickets_count,
                             processing_date,
                             s.Floor.SECOND,
+                            is_booking,
                         )
                     get_to_month(browser, wait, month_button_clicks)
 
                     break
                 processing_date, new_month_flag = day_increment(processing_date)
-                if new_month_flag:
+                if new_month_flag or processing_date >= end_date:
+                    month_button_clicks = processing_date.month - date.today().month
                     break
                 continue
 
-        bot_log(f"All {CFG.MONTHS_PAGES_PROCESSING} months are processed")
+        bot_log("Bot process finished")
 
     except ParserCanceled:
         bot_log("Parser CANCELED")
