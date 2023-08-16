@@ -1,9 +1,13 @@
 name: RELEASE
 
 on:
-  release:
-    types:
-      - released
+  # release:
+  #   types:
+  #     - released
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [develop]
 
 env:
   DOCKER_LOGIN: simple2b
@@ -17,6 +21,14 @@ jobs:
         with:
           username: ${{ env.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+      - name: update compose file
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USERNAME }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          source: docker-compose.prod.yaml
+          target: ~/paris/docker-compose.yaml
       - name: deploy
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -24,6 +36,8 @@ jobs:
           username: ${{ secrets.PROD_USERNAME }}
           key: ${{ secrets.PROD_SSH_KEY }}
           script: |
-            cd ~/kebab-estate
-            docker-compose pull web &&
-            docker-compose up -d web
+            cd ~/paris &&
+            docker-compose pull &&
+            docker-compose down &&
+            docker-compose up -d &&
+            docker system prune -f
