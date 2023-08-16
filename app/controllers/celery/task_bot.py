@@ -42,6 +42,16 @@ def bot(
             session.add(bot)
         bot.status = s.BotStatus.UP
 
+    browser.execute_script("window.open('', '_blank')")
+    # browser.switch_to.window(browser.window_handles[-1])
+
+    windows_before = browser.window_handles[:-1]
+    for window in windows_before:
+        browser.switch_to.window(window)
+        browser.close()
+
+    browser.switch_to.window(browser.window_handles[0])
+
     bot_log("Goes UP")
     crawler(browser, wait, start_date, end_date, is_booking)
 
