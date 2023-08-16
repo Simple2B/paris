@@ -35,7 +35,8 @@ jobs:
           script: |
             cd ~/paris &&
             mv docker-compose.prod.yaml docker-compose.yaml &&
-            docker-compose pull &&
             docker-compose down &&
+            docker image prune -fa &&
+            docker-compose pull &&
             docker-compose up -d &&
             docker system prune -f
