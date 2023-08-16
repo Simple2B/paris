@@ -30,6 +30,7 @@ def bot(
     from selenium.webdriver.support.wait import WebDriverWait
     from app.controllers.parser import crawler
     from app.controllers.selenium import get_browser
+    from selenium.common.exceptions import WebDriverException
 
     browser = get_browser()
     assert browser
@@ -43,7 +44,12 @@ def bot(
         bot.status = s.BotStatus.UP
 
     bot_log("Goes UP")
-    crawler(browser, wait, start_date, end_date, is_booking)
+    try:
+        crawler(browser, wait, start_date, end_date, is_booking)
+    except WebDriverException as e:
+        bot_log(f"WebDriverException: {type(e)}", s.BotLogLevel.CRITICAL)
+        get_browser(force_reconnect=True)
+        bot_log("Try to restart bot")
 
     bot_log("Goes DOWN")
 

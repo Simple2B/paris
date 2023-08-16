@@ -85,6 +85,8 @@ services:
     environment:
       APP_ENV: production
       REDIS_URL: redis://redis/
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - db
       - redis

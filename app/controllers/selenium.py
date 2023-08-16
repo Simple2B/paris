@@ -1,26 +1,48 @@
-from functools import lru_cache
+import time
 
 from selenium import webdriver
 from selenium.webdriver import Chrome
+import docker
 from flask import current_app as app
 
 from app.logger import log
+from config import config
+
+CFG = config()
+
+_g_browser: Chrome | None = None  # type: ignore
 
 
-@lru_cache
-def get_browser() -> Chrome | None:
+def get_browser(force_reconnect=False) -> Chrome | None:
     from selenium.webdriver.chrome.options import Options
     from selenium.common.exceptions import SessionNotCreatedException
+
+    global _g_browser
+
+    if force_reconnect:
+        from docker.models.containers import Container
+
+        _g_browser = None
+        # restart container with chrome
+        dc = docker.DockerClient(base_url="unix://var/run/docker.sock")
+        container: Container = dc.containers.get(CFG.CHROME_DOCKER_CONTAINER_NAME)  # type: ignore
+        log(log.WARNING, "Restarting container [%s]", CFG.CHROME_DOCKER_CONTAINER_NAME)
+        container.restart()
+        time.sleep(5)
+
+    if _g_browser:
+        return _g_browser
 
     chrome_options = Options()
     try:
         log(log.DEBUG, "Initializing browser (before)")
-        browser: Chrome = webdriver.Remote(
+        # get remote driver with timeout
+        _g_browser = webdriver.Remote(
             app.config["SELENIUM_REMOTE_DRIVER_URL"],
             options=chrome_options,
         )  # type: ignore
         log(log.DEBUG, "Browser initialized")
-        return browser  # type: ignore
+        return _g_browser
     except SessionNotCreatedException:
         log(log.ERROR, "Selenium session not created")
     return None
