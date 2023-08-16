@@ -20,7 +20,7 @@ class FlaskCelery(Celery):
         TaskBase = self.Task
         _celery = self
 
-        class ContextTask:  # type: ignore
+        class ContextTask(TaskBase):  # type: ignore
             abstract = True
 
             def __call__(self, *args, **kwargs):
@@ -37,6 +37,7 @@ class FlaskCelery(Celery):
         self.app = app
 
         configuration = config()
+
         self.conf.broker_url = configuration.REDIS_URL  # type: ignore
         self.conf.result_backend = configuration.REDIS_URL  # type: ignore
         self.conf.broker_connection_retry_on_startup = True
