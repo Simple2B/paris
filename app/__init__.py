@@ -34,6 +34,7 @@ def create_app(environment=None):
         ticket_blueprint,
         dashboard_blueprint,
         tasks_blueprint,
+        ticket_order_blueprint,
     )
     from app import models as m
 
@@ -73,6 +74,7 @@ def create_app(environment=None):
     app.register_blueprint(ticket_blueprint)
     app.register_blueprint(dashboard_blueprint)
     app.register_blueprint(tasks_blueprint)
+    app.register_blueprint(ticket_order_blueprint)
 
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
 
