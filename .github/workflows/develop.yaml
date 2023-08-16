@@ -29,7 +29,7 @@ jobs:
           username: ${{ secrets.PROD_USERNAME }}
           key: ${{ secrets.PROD_SSH_KEY }}
           source: docker-compose.prod.yaml
-          target: ~/paris/docker-compose.yaml
+          target: ~/paris
       - name: deploy
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -38,6 +38,7 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           script: |
             cd ~/paris &&
+            mv docker-compose.prod.yaml docker-compose.yaml &&
             docker-compose pull &&
             docker-compose down &&
             docker-compose up -d &&
