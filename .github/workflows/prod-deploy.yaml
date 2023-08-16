@@ -1,13 +1,9 @@
 name: RELEASE
 
 on:
-  # release:
-  #   types:
-  #     - released
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [develop]
+  release:
+    types:
+      - released
 
 env:
   DOCKER_LOGIN: simple2b
