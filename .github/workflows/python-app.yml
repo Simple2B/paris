@@ -39,3 +39,6 @@ jobs:
       - name: Run Flask tests
         run: |
           poetry run pytest
+      - name: MyPy type checking
+        run: |
+          poetry run mypy app
