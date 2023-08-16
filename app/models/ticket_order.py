@@ -26,8 +26,3 @@ class TicketOrder(db.Model, ModelMixin):
         default=s.OrderStatus.NEW,
         server_default=s.OrderStatus.NEW.value,
     )
-
-    @property
-    def json(self):
-        u = s.TicketOrder.from_orm(self)
-        return u.json()

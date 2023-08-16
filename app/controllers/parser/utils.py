@@ -88,7 +88,7 @@ def button_processing(
     browser: Chrome,
     tickets_count: int,
     processing_date: datetime.date,
-    floor: str,
+    floor: s.Floor,
     is_booking: bool = False,
 ):
     # TODO: check network traffic

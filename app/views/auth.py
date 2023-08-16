@@ -70,7 +70,8 @@ def forgot_pass():
     form = f.ForgotForm(request.form)
     if form.validate_on_submit():
         query = m.User.select().where(m.User.email == form.email.data)
-        user: m.User = db.session.scalar(query)
+        user: m.User | None = db.session.scalar(query)
+        assert user
         # create e-mail message
         msg = Message(
             subject="Reset password",

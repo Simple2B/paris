@@ -69,7 +69,7 @@ def processing() -> dict[str, object]:
 
 @bp.route("/result/<id>", methods=["GET"])
 @login_required
-def task_result(id: str) -> dict[str, object]:
+def task_result(id: str):
     result = AsyncResult(id)
     return jsonify(
         {

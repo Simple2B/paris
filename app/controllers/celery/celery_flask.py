@@ -20,7 +20,7 @@ class FlaskCelery(Celery):
         TaskBase = self.Task
         _celery = self
 
-        class ContextTask(TaskBase):
+        class ContextTask:
             abstract = True
 
             def __call__(self, *args, **kwargs):
