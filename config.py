@@ -108,7 +108,10 @@ class DevelopmentConfig(BaseConfig):
         fields = {
             "ALCHEMICAL_DATABASE_URL": {
                 "env": "DEVEL_DATABASE_URL",
-            }
+            },
+            "REDIS_URL": {
+                "env": "DEVEL_REDIS_URL",
+            },
         }
 
 

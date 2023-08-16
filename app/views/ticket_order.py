@@ -19,6 +19,7 @@ bp = Blueprint("ticket_order", __name__, url_prefix="/order")
 def create():
     form = f.TicketOrderForm()
     if form.validate_on_submit():
+        # TODO: discuss with team about db model
         order = m.TicketOrder(
             user_id=current_user.id,
             ticket_time_id=form.ticket_time_id.data,
