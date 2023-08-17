@@ -65,6 +65,7 @@ class BaseConfig(BaseSettings):
     BROWSER_TIMEOUT: float = 4
     BROWSER_TIMEOUT_SHORT: float = 2
     BROWSER_TIMEOUT_LONG: float = 10
+    CHROME_DOCKER_CONTAINER_NAME: str
 
     # Parser
     LOGIN_PAGE_LINK = "https://ticketpro.toureiffel.paris/login"
