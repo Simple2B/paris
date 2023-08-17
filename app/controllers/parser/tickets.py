@@ -1,5 +1,7 @@
 import datetime
 
+import sqlalchemy as sa
+
 from app import models as m
 from app import schema as s
 from app import db
@@ -27,10 +29,17 @@ def update_date_tickets_count(tickets_count: int, date: datetime.date):
 
         if not tickets_count:
             bot_log(f"Delete all tickets for day - [{ticket_date.date}]")
-            session.execute(
-                m.TicketTime.delete().where(
-                    m.TicketTime.ticket_date_id == ticket_date.id
+            ids = session.scalars(
+                sa.select(m.TicketDate.id).where(
+                    m.TicketDate.date < datetime.date.today()
                 )
+            ).all()
+            session.execute(
+                sa.delete(m.TicketTime).where(m.TicketTime.ticket_date_id.in_(ids))
+            )
+
+            session.execute(
+                sa.delete(m.TicketDate).where(m.TicketDate.date < datetime.date.today())
             )
 
 
