@@ -6,6 +6,7 @@ from selenium.common.exceptions import (
 from selenium.webdriver import Chrome
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
 
 from config import config
 from .exceptions import check_canceled
@@ -26,6 +27,8 @@ def wait_for_page_to_load(browser):
 def try_click(button: WebElement, browser: Chrome) -> None:
     try:
         button.click()
+    except StaleElementReferenceException:
+        raise TimeoutException
     except ElementClickInterceptedException:
         browser.execute_script("arguments[0].click();", button)
 
