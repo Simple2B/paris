@@ -39,13 +39,23 @@ def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
     attempts = 0
 
     while attempts < CFG.MAX_RETRY_LOGIN_COUNT:
-        browser.get(CFG.LOGIN_PAGE_LINK)
-        try:
-            wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
-            log(log.DEBUG, "Logged in successfully (via session)")
-            break
-        except TimeoutException:
-            bot_log("Session login expired. Logging in again", s.BotLogLevel.INFO)
+        browser.set_page_load_timeout(CFG.BROWSER_TIMEOUT)
+        while True:
+            try:
+                browser.get(CFG.LOGIN_PAGE_LINK)
+                break
+            except TimeoutException:
+                bot_log("Page load timeout", s.BotLogLevel.WARNING)
+                browser.execute_script("window.open('', '_blank')")
+                browser.close()
+                browser.switch_to.window(browser.window_handles[-1])
+
+        # try:
+        #     wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
+        #     log(log.DEBUG, "Logged in successfully (via session)")
+        #     break
+        # except TimeoutException:
+        #     bot_log("Session login expired. Logging in again", s.BotLogLevel.INFO)
         try:
             identify_input = wait.until(
                 EC.presence_of_element_located((By.ID, "userId"))
@@ -70,9 +80,17 @@ def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
                 continue
             break
         except TimeoutException:
-            bot_log("Session login expired. Logging in again", s.BotLogLevel.INFO)
+            bot_log("Element absent, possibly session login occur", s.BotLogLevel.INFO)
+        try:
             wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
-
+            break
+        except TimeoutException:
+            bot_log(
+                f"Login failed. Rerunning [{attempts + 1}] ...",
+                s.BotLogLevel.ERROR,
+            )
+            attempts += 1
+            continue
     if attempts == CFG.MAX_RETRY_LOGIN_COUNT:
         bot_log("Login failed", s.BotLogLevel.ERROR)
         return False
@@ -198,7 +216,7 @@ def get_date_info(browser: Chrome, wait: WebDriverWait, day: int) -> bool:
                 )
             )
         )
-        time.sleep(0.5)
+        time.sleep(0.25)
     except TimeoutException:
         bot_log(
             f"Day [{day}] is not available (due to TimeoutException)",

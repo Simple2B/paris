@@ -154,7 +154,6 @@ def crawler(
                             is_booking,
                         )
                     get_to_month(browser, wait, month_button_clicks)
-
                     break
                 processing_date, new_month_flag = day_increment(processing_date)
                 if new_month_flag or processing_date >= end_date:
