@@ -216,7 +216,7 @@ def get_date_info(browser: Chrome, wait: WebDriverWait, day: int) -> bool:
                 )
             )
         )
-        time.sleep(0.25)
+        time.sleep(0.35)
     except TimeoutException:
         bot_log(
             f"Day [{day}] is not available (due to TimeoutException)",
