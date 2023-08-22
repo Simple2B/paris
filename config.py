@@ -87,8 +87,6 @@ class BaseConfig(BaseSettings):
     # TODO: remove before deploy
     DASHBOARD_LINK = "https://effel.simple2b.net/dashboard/"
     TICKETS_LINK = "https://effel.simple2b.net/ticket/"
-    TELEGRAM_BOT_TOKEN: str
-    BOT_ID: str
 
     @staticmethod
     def configure(app: Flask):
