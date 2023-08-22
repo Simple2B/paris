@@ -60,7 +60,7 @@ def bot(
         crawler(browser, wait, start_date, end_date, is_booking)
     except WebDriverException as e:
         bot_log(f"WebDriverException: {type(e)}", s.BotLogLevel.CRITICAL)
-        # get_browser(force_reconnect=True)
+        get_browser(force_reconnect=True)
         bot_log("Try to restart bot")
         send_message_to_chats(f"BOT: ERROR occurred - {type(e)}")
     else:
