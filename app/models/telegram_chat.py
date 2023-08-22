@@ -11,7 +11,7 @@ class TelegramChat(db.Model, ModelMixin):  # type: ignore
     __tablename__ = "telegram_chats"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-    chat_id: orm.Mapped[int] = orm.mapped_column(sa.Integer, sa.ForeignKey("bot.id"))
+    chat_id: orm.Mapped[int] = orm.mapped_column(sa.Integer, unique=True)
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime,
         default=datetime.utcnow,
@@ -20,4 +20,4 @@ class TelegramChat(db.Model, ModelMixin):  # type: ignore
     is_deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 
     def __repr__(self):
-        return f"<{self.id}:{self.level.name}:{self.message}>"
+        return f"<{self.id}:{self.title}:{self.chat_id}>"

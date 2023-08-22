@@ -85,6 +85,8 @@ class BaseConfig(BaseSettings):
     MONTHS_NEXT_SELECTOR_COUNT: int = 6
 
     # TODO: remove before deploy
+    DASHBOARD_LINK = "https://effel.simple2b.net/dashboard/"
+    TICKETS_LINK = "https://effel.simple2b.net/ticket/"
     TELEGRAM_BOT_TOKEN: str
     BOT_ID: str
 

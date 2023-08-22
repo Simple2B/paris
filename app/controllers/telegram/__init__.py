@@ -1,2 +1,2 @@
 # flake8: noqa F401
-from .test import get_updates
+from .controller import get_updates, send_message_to_chats

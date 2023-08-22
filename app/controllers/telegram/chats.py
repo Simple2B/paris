@@ -4,11 +4,12 @@ from app import db
 
 
 def update_telegram_chat(chat_id: int, title: str, is_deleted: bool = False):
-    """Update or create new TicketDate object
+    """Update or create new TelegramChat object
 
     Args:
-        tickets_count (int): total_count of tickets
-        date (datetime.date): date of tickets
+        chat_id (int): chat id
+        title (str): chat title
+        is_deleted (bool, optional): is chat deleted. Defaults to False.
     """
     with db.begin() as session:
         tg_chat: m.TelegramChat = session.scalar(
@@ -27,12 +28,5 @@ def update_telegram_chat(chat_id: int, title: str, is_deleted: bool = False):
                     log.INFO,
                     f"Updating existing TelegramChat - [{chat_id}] to title [{title}]",
                 )
+                tg_chat.is_deleted = False
                 tg_chat.total_tickets = title
-
-
-def get_all_chats():
-    with db.begin() as session:
-        chats = session.query(m.TelegramChat).filter(
-            m.TelegramChat.is_deleted == False  # noqa E712
-        )
-        return chats.all()
