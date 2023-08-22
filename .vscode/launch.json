@@ -51,6 +51,13 @@
       "request": "launch",
       "module": "flask",
       "args": ["go", "https://www.google.com/"]
+    },
+    {
+      "name": "telegram test",
+      "type": "python",
+      "request": "launch",
+      "module": "flask",
+      "args": ["telegram-test"]
     }
   ]
 }
