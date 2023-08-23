@@ -2,7 +2,7 @@ import json
 
 import requests
 
-from config import config
+from config import config, ProductionConfig
 from app.logger import log
 from app import models as m
 from app import db
@@ -10,7 +10,10 @@ from .utils import send_message, processing_chats
 
 cfg = config()
 
-TELEGRAM_API_URL = f"https://api.telegram.org/bot{cfg.TELEGRAM_BOT_TOKEN}"
+if isinstance(cfg, ProductionConfig):
+    TELEGRAM_API_URL = f"https://api.telegram.org/bot{cfg.TELEGRAM_BOT_TOKEN}"
+else:
+    raise Exception("Wrong config")
 
 # scheduler should get updates at least once at day
 
