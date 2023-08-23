@@ -6,3 +6,4 @@ from .ticket_order import TicketOrder
 from .bot import Bot
 from .bot_log import BotLog
 from .scheduler_config import SchedulerConfig
+from .telegram_chat import TelegramChat

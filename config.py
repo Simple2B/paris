@@ -84,6 +84,9 @@ class BaseConfig(BaseSettings):
     BOOKING_JOB_NAME: str = "booking"
     MONTHS_NEXT_SELECTOR_COUNT: int = 6
 
+    DASHBOARD_LINK = "https://effel.simple2b.net/dashboard/"
+    TICKETS_LINK = "https://effel.simple2b.net/ticket/"
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.
@@ -142,6 +145,8 @@ class ProductionConfig(BaseConfig):
     WTF_CSRF_ENABLED = True
     BROWSER_URL: str = "http://browser.localhost:8080/"
     SELENIUM_REMOTE_DRIVER_URL: str = "http://chrome:4444/wd/hub"
+    TELEGRAM_BOT_TOKEN: str
+    BOT_ID: str
 
     class Config:
         fields = {

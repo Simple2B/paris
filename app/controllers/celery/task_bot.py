@@ -31,7 +31,9 @@ def bot(
     from app.controllers.parser import crawler
     from app.controllers.selenium import get_browser
     from selenium.common.exceptions import WebDriverException
+    from app.controllers.telegram.controller import send_message_to_chats, get_updates
 
+    get_updates()
     browser = get_browser()
     assert browser
     wait = WebDriverWait(browser, cfg.BROWSER_TIMEOUT)
@@ -60,9 +62,18 @@ def bot(
         bot_log(f"WebDriverException: {type(e)}", s.BotLogLevel.CRITICAL)
         get_browser(force_reconnect=True)
         bot_log("Try to restart bot")
+        send_message_to_chats(f"BOT: ERROR occurred - {type(e)}")
+    else:
+        if is_booking:
+            send_message_to_chats(
+                f"BOT: Booking completed successfully - {cfg.DASHBOARD_LINK}"
+            )
+        else:
+            send_message_to_chats(
+                f"BOT: Updating data completed successfully - {cfg.DASHBOARD_LINK}"
+            )
 
     bot_log("Goes DOWN")
-
     with db.begin() as session:
         bot = session.scalar(sa.select(m.Bot))
         assert bot

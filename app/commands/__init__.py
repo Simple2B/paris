@@ -82,3 +82,9 @@ def init(app: Flask):
     def reset_bot():
         """Reset bot"""
         c.reset_bot()
+
+    @app.cli.command()
+    def telegram_test():
+        from app.controllers.telegram import get_updates
+
+        get_updates()
