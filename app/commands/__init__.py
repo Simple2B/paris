@@ -85,4 +85,6 @@ def init(app: Flask):
 
     @app.cli.command()
     def telegram_test():
-        c.get_updates()
+        from app.controllers.telegram import get_updates
+
+        get_updates()
