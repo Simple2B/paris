@@ -41,4 +41,5 @@ jobs:
           poetry run pytest
       - name: MyPy type checking
         run: |
+          poetry run mypy --install-types
           poetry run mypy app
