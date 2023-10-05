@@ -24,8 +24,8 @@ def get_browser(force_reconnect=False) -> Chrome | None:
 
         _g_browser = None
         # restart container with chrome
-        dc = docker.DockerClient(base_url="unix://var/run/docker.sock")
-        container: Container = dc.containers.get(CFG.CHROME_DOCKER_CONTAINER_NAME)  # type: ignore
+        dc = docker.DockerClient(base_url="unix://var/run/docker.sock", version="1.40")
+        container: Container = dc.containers.get(CFG.CHROME_DOCKER_CONTAINER_NAME)
         log(log.WARNING, "Restarting container [%s]", CFG.CHROME_DOCKER_CONTAINER_NAME)
         container.restart()
         time.sleep(5)
