@@ -114,6 +114,7 @@ class DevelopmentConfig(BaseConfig):
                 "env": "DEVEL_REDIS_URL",
             },
         }
+        env_file = "project.env", ".env"
 
 
 class TestingConfig(BaseConfig):
@@ -131,6 +132,7 @@ class TestingConfig(BaseConfig):
                 "env": "TEST_DATABASE_URL",
             }
         }
+        env_file = "project.env", ".env"
 
 
 class ProductionConfig(BaseConfig):
@@ -149,6 +151,7 @@ class ProductionConfig(BaseConfig):
                 "env": "DATABASE_URL",
             }
         }
+        env_file = "project.env", ".env"
 
 
 @lru_cache
