@@ -13,7 +13,6 @@ services:
       PGDATABASE: db
       PGPASSWORD: ${POSTGRES_PASSWORD:-passwd}
       PGUSER: ${POSTGRES_USER:-postgres}
-
   chrome:
     image: seleniarm/standalone-chromium
     # image: seleniarm/standalone-firefox
@@ -28,8 +27,8 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.chrome.rule=Host(`${BROWSER_HOST}`)'
-      - 'traefik.http.routers.chrome.tls=true'
-      - 'traefik.http.routers.chrome.tls.certresolver=myresolver'
+      - 'traefik.http.routers.portainer.tls=true'
+      - 'traefik.http.routers.portainer.tls.certresolver=myresolver'
       - 'traefik.http.services.chrome.loadbalancer.server.port=7900'
 
   traefik:
