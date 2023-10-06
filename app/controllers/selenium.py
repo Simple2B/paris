@@ -24,6 +24,7 @@ def get_browser(force_reconnect=False) -> Chrome | None:
 
         _g_browser = None
         # restart container with chrome
+        # TODO: try to map sock file to container
         dc = docker.DockerClient(base_url="unix://var/run/docker.sock", version="1.40")
         container: Container = dc.containers.get(CFG.CHROME_DOCKER_CONTAINER_NAME)
         log(log.WARNING, "Restarting container [%s]", CFG.CHROME_DOCKER_CONTAINER_NAME)

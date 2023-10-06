@@ -66,6 +66,8 @@ services:
     image: simple2b/paris:latest
     restart: always
     command: sh ./start_server.sh
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - .env
     depends_on:
@@ -81,6 +83,8 @@ services:
     image: simple2b/paris:latest
     restart: always
     command: sh ./start_worker.sh
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - .env
     depends_on:
