@@ -13,6 +13,7 @@ services:
       PGDATABASE: db
       PGPASSWORD: ${POSTGRES_PASSWORD:-passwd}
       PGUSER: ${POSTGRES_USER:-postgres}
+
   chrome:
     image: seleniarm/standalone-chromium
     # image: seleniarm/standalone-firefox
@@ -46,7 +47,7 @@ services:
       - '--providers.docker.exposedbydefault=false'
       - '--entryPoints.websecure.address=:443'
       - '--entryPoints.web.address=:80'
-- '--certificatesResolvers.myresolver.acme.email=${ACME_EMAIL}'
+      - '--certificatesResolvers.myresolver.acme.email=${ACME_EMAIL}'
       - '--certificatesResolvers.myresolver.acme.storage=/data/acme.json'
       - '--certificatesresolvers.myresolver.acme.caServer=https://acme-v02.api.letsencrypt.org/directory'
       - '--certificatesresolvers.myresolver.acme.httpchallenge=true'
@@ -65,8 +66,6 @@ services:
     image: simple2b/paris:latest
     restart: always
     command: sh ./start_server.sh
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - .env
     depends_on:
@@ -82,8 +81,6 @@ services:
     image: simple2b/paris:latest
     restart: always
     command: sh ./start_worker.sh
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - .env
     depends_on:
