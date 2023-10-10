@@ -29,7 +29,7 @@ def get_browser(force_reconnect=False) -> Chrome | None:
         container: Container = dc.containers.get(CFG.CHROME_DOCKER_CONTAINER_NAME)
         log(log.WARNING, "Restarting container [%s]", CFG.CHROME_DOCKER_CONTAINER_NAME)
         container.restart()
-        time.sleep(5)
+        time.sleep(CFG.BROWSER_RECONNECT_TIMEOUT)
 
     if _g_browser:
         return _g_browser

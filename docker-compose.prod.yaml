@@ -46,7 +46,7 @@ services:
       - '--providers.docker.exposedbydefault=false'
       - '--entryPoints.websecure.address=:443'
       - '--entryPoints.web.address=:80'
-- '--certificatesResolvers.myresolver.acme.email=${ACME_EMAIL}'
+      - '--certificatesResolvers.myresolver.acme.email=${ACME_EMAIL}'
       - '--certificatesResolvers.myresolver.acme.storage=/data/acme.json'
       - '--certificatesresolvers.myresolver.acme.caServer=https://acme-v02.api.letsencrypt.org/directory'
       - '--certificatesresolvers.myresolver.acme.httpchallenge=true'

@@ -75,6 +75,7 @@ class BaseConfig(BaseSettings):
     MONTHS_PAGES_PROCESSING = 3
     TICKETS_PER_DAY = 50
     MAX_RETRY_LOGIN_COUNT = 5
+    BROWSER_RECONNECT_TIMEOUT = 10
 
     # Scheduler
     EVENING_START_HOUR: int = 18
