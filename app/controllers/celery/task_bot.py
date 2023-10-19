@@ -60,7 +60,6 @@ def bot(
         bot_log(f"WebDriverException: {type(e)}", s.BotLogLevel.CRITICAL)
         get_browser(force_reconnect=True)
         # c.reset_bot()
-        bot_log("Try to restart bot")
 
     bot_log("Goes DOWN")
 
