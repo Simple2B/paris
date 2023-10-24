@@ -53,7 +53,7 @@ def index():
         scheduler_date = job.next_run_time.date().strftime("%m/%d/%Y")
         scheduler_time = job.next_run_time.time().strftime("%I:%M %p")
 
-        scheduler_month = ALL_MONTHS[job.args[1].month - 1]
+        scheduler_day = job.args[2].strftime("%m/%d/%Y")
 
         return render_template(
             "bot/index.html",
@@ -62,7 +62,7 @@ def index():
             page=pagination,
             scheduler_date=scheduler_date,
             scheduler_time=scheduler_time,
-            scheduler_month=scheduler_month,
+            scheduler_day=scheduler_day,
             months=months,
         )
     return render_template(
@@ -103,14 +103,16 @@ def schedule():
         "Scheduling at %s - %s: %s",
         schedule_form.day.data,
         schedule_form.time.data,
-        schedule_form.month.data,
+        schedule_form.booking_day.data,
     )
     flash(
-        f"Scheduling at {schedule_form.day.data} - {schedule_form.time.data}: {schedule_form.month.data}",
+        f"Scheduling at {schedule_form.day.data} - {schedule_form.time.data}: {schedule_form.booking_day.data}",
         "success",
     )
     c.add_task_booking(
-        schedule_form.day.data, schedule_form.time.data, schedule_form.month.data
+        schedule_form.day.data,
+        schedule_form.time.data,
+        booking_day=schedule_form.booking_day.data,
     )
     return redirect(url_for("bot.index"))
 

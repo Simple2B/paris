@@ -1,17 +1,17 @@
 import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import ValidationError, DateField, TimeField, StringField
+from wtforms import ValidationError, DateField, TimeField
 from wtforms.validators import DataRequired
-
-from app import schema as s
 
 
 class ScheduleForm(FlaskForm):
     day = DateField("day", validators=[DataRequired()], format="%m/%d/%Y")
     # time format is HH:MM pm/am
     time = TimeField("time", validators=[DataRequired()], format="%I:%M %p")
-    month = StringField("month", validators=[DataRequired()])
+    booking_day = DateField(
+        "booking_day", validators=[DataRequired()], format="%m/%d/%Y"
+    )
 
     def validate_day(form, field):
         if field.data < datetime.date.today():
@@ -25,6 +25,9 @@ class ScheduleForm(FlaskForm):
         ):
             raise ValidationError("Time must be in the future")
 
-    def validate_month(form, field):
-        if field.data.upper() not in [m.value for m in s.Month]:
-            raise ValidationError("Wrong month")
+    def validate_booking_day(form, field):
+        if field.data < datetime.date.today():
+            raise ValidationError("Date must be in the future")
+
+        if field.data < form.day.data:
+            raise ValidationError("Booking date must be after the start date")

@@ -11,16 +11,29 @@ from app.logger import log
 CFG = config()
 
 
-def add_task_booking(date: datetime.date, time: datetime.time, month: str):
+def add_task_booking(
+    date: datetime.date,
+    time: datetime.time,
+    month: str | None = None,
+    booking_day: datetime.date | None = None,
+):
     """Creating or updating booking job"""
     job = scheduler.get_job(CFG.BOOKING_JOB_NAME)
     if job:
         scheduler.remove_job(job.id)
 
-    month_index = [mn.name for mn in s.Month].index(month.upper()) + 1
-    start_date = datetime.date(year=date.year, month=month_index, day=1)
-    if start_date < datetime.date.today():
-        start_date = datetime.date(year=date.year + 1, month=month_index, day=1)
+    if month:
+        month_index = [mn.name for mn in s.Month].index(month.upper()) + 1
+        start_date = datetime.date(year=date.year, month=month_index, day=1)
+        if start_date < datetime.date.today():
+            start_date = datetime.date(year=date.year + 1, month=month_index, day=1)
+        args = [True, start_date, start_date + datetime.timedelta(weeks=4)]
+        log(log.INFO, "Booking job added at %s - %s: %s", date, time, month)
+
+    else:
+        start_date = booking_day
+        args = [True, start_date, start_date + datetime.timedelta(days=1)]
+        log(log.INFO, "Booking job added at %s - %s: %s", date, time, booking_day)
 
     scheduler.add_job(
         start_bot,
@@ -28,9 +41,8 @@ def add_task_booking(date: datetime.date, time: datetime.time, month: str):
         id=CFG.BOOKING_JOB_NAME,
         run_date=datetime.datetime.combine(date, time),
         name=CFG.BOOKING_JOB_NAME,
-        args=[True, start_date, start_date + datetime.timedelta(weeks=4)],
+        args=args,
     )
-    log(log.INFO, "Booking job added at %s - %s: %s", date, time, month)
 
 
 def get_tasks():
