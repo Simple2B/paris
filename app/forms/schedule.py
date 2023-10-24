@@ -29,5 +29,5 @@ class ScheduleForm(FlaskForm):
         if field.data < datetime.date.today():
             raise ValidationError("Date must be in the future")
 
-        if field.data < form.day.data:
+        if form.day.data and field.data < form.day.data:
             raise ValidationError("Booking date must be after the start date")
