@@ -30,10 +30,14 @@ def add_task_booking(
         args = [True, start_date, start_date + datetime.timedelta(weeks=4)]
         log(log.INFO, "Booking job added at %s - %s: %s", date, time, month)
 
-    else:
+    elif booking_day:
         start_date = booking_day
         args = [True, start_date, start_date + datetime.timedelta(days=1)]
         log(log.INFO, "Booking job added at %s - %s: %s", date, time, booking_day)
+
+    else:
+        log(log.WARNING, "Booking job not added: wrong params")
+        return
 
     scheduler.add_job(
         start_bot,
