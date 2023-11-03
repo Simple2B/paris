@@ -41,5 +41,6 @@ def add_ticket_time(
 
 def delete_all_tickets():
     with db.begin() as session:
+        session.execute(m.TicketOrder.delete())
         session.execute(m.TicketTime.delete())
         session.execute(m.TicketDate.delete())
