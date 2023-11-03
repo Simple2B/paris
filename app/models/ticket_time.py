@@ -7,6 +7,7 @@ from app.database import db
 from .utils import ModelMixin
 from app import schema as s
 from .ticket_date import TicketDate
+from .ticket_order import TicketOrder
 
 
 class TicketTime(db.Model, ModelMixin):  # type: ignore
@@ -26,6 +27,12 @@ class TicketTime(db.Model, ModelMixin):  # type: ignore
 
     ticket_date: orm.Mapped[TicketDate] = orm.relationship(
         "TicketDate", backref="tickets_time"
+    )
+
+    ticket_orders: orm.Mapped[TicketOrder] = orm.relationship(
+        "TicketOrder",
+        backref="ticket_time",
+        cascade="all, delete-orphan",  # Enable cascade delete behavior
     )
 
     @property
