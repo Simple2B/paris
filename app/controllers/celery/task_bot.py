@@ -10,6 +10,8 @@ from config import config
 from app.logger import log
 from app.controllers.parser.bot_log import bot_log
 
+from selenium.common.exceptions import InvalidSessionIdException
+
 cfg = config()
 
 
@@ -42,8 +44,13 @@ def bot(
             bot = m.Bot()
             session.add(bot)
         bot.status = s.BotStatus.UP
-
-    browser.execute_script("window.open('', '_blank')")
+    try:
+        browser.execute_script("window.open('', '_blank')")
+    except InvalidSessionIdException as e:
+        bot_log(f"InvalidSessionIdException: {type(e)}", s.BotLogLevel.CRITICAL)
+        bot_log("Reconnecting browser...")
+        get_browser(force_reconnect=True)
+        # c.reset_bot()
     # browser.switch_to.window(browser.window_handles[-1])
 
     windows_before = browser.window_handles[:-1]
