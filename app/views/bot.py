@@ -64,7 +64,7 @@ def index():
             scheduler_time=scheduler_time,
             scheduler_day=scheduler_day,
             months=months,
-            tickets = job.args[3],
+            tickets=job.args[3],
         )
     return render_template(
         "bot/index.html",
@@ -108,7 +108,7 @@ def schedule():
         schedule_form.tickets.data,
     )
     flash(
-        f"Scheduling at {schedule_form.day.data} - {schedule_form.time.data}: {schedule_form.booking_day.data} ({schedule_form.tickets.data} tickets)",
+        f"Scheduling at {schedule_form.day.data} - {schedule_form.time.data}: {schedule_form.booking_day.data} ({schedule_form.tickets.data} tickets)",  # noqa: E501
         "success",
     )
     c.add_task_booking(
