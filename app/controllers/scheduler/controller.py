@@ -16,6 +16,7 @@ def add_task_booking(
     time: datetime.time,
     month: str | None = None,
     booking_day: datetime.date | None = None,
+    tickets: int = CFG.TICKETS_PER_DAY,
 ):
     """Creating or updating booking job"""
     job = scheduler.get_job(CFG.BOOKING_JOB_NAME)
@@ -27,12 +28,12 @@ def add_task_booking(
         start_date = datetime.date(year=date.year, month=month_index, day=1)
         if start_date < datetime.date.today():
             start_date = datetime.date(year=date.year + 1, month=month_index, day=1)
-        args = [True, start_date, start_date + datetime.timedelta(weeks=4)]
+        args = [True, start_date, start_date + datetime.timedelta(weeks=4), tickets]
         log(log.INFO, "Booking job added at %s - %s: %s", date, time, month)
 
     elif booking_day:
         start_date = booking_day
-        args = [True, start_date, start_date + datetime.timedelta(days=1)]
+        args = [True, start_date, start_date + datetime.timedelta(days=1), tickets]
         log(log.INFO, "Booking job added at %s - %s: %s", date, time, booking_day)
 
     else:

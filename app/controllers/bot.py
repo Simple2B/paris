@@ -9,12 +9,16 @@ from app import schema as s
 from app.logger import log
 
 from .celery.task_bot import bot as bot_task
+from config import config
+
+CFG = config()
 
 
 def start_bot(
     is_booking: bool = False,
     start_date: datetime.date | None = None,
     end_date: datetime.date | None = None,
+    tickets: int = CFG.TICKETS_PER_DAY,
 ):
     log(log.INFO, "BOT: Start")
     with db.begin() as session:
@@ -50,7 +54,7 @@ def start_bot(
     with db.begin() as session:
         bot = session.scalar(sa.select(m.Bot))
         assert bot
-        task = bot_task.delay(is_booking, start_date, end_date)
+        task = bot_task.delay(is_booking, start_date, end_date, tickets)
         bot.task_id = task.id
 
 

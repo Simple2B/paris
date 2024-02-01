@@ -1,8 +1,12 @@
 import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import ValidationError, DateField, TimeField
+from wtforms import ValidationError, DateField, TimeField, IntegerField
 from wtforms.validators import DataRequired
+
+from config import config
+
+CFG = config()
 
 
 class ScheduleForm(FlaskForm):
@@ -12,6 +16,7 @@ class ScheduleForm(FlaskForm):
     booking_day = DateField(
         "booking_day", validators=[DataRequired()], format="%m/%d/%Y"
     )
+    tickets = IntegerField("tickets", validators=[DataRequired()], default=CFG.TICKETS_PER_DAY)
 
     def validate_day(form, field):
         if field.data < datetime.date.today():
@@ -31,3 +36,7 @@ class ScheduleForm(FlaskForm):
 
         if form.day.data and field.data < form.day.data:
             raise ValidationError("Booking date must be after the start date")
+
+    def validate_tickets(form, field):
+        if field.data < 1:
+            raise ValidationError("Tickets must be greater than 0")

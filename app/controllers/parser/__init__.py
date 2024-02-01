@@ -38,6 +38,7 @@ def crawler(
     start_date: date | None,
     end_date: date | None,
     is_booking: bool = True,
+    max_tickets: int = CFG.TICKETS_PER_DAY,
 ):
     """Main function of crawler. Crawls through all available dates and collects info about tickets.
 
@@ -80,7 +81,7 @@ def crawler(
 
                 bot_log(f"Processing date: {processing_date}")
                 tickets_count = get_tickets(
-                    CFG.TICKETS_PER_DAY, browser, wait, processing_date.day
+                    max_tickets, browser, wait, processing_date.day,
                 )
                 while tickets_count > 0:
                     try:

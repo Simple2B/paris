@@ -25,6 +25,7 @@ def add(x: int, y: int) -> int:
 @celery.task
 def bot(
     is_booking: bool,
+    tickets: int = cfg.TICKETS_PER_DAY,
     start_date: datetime.date | None = None,
     end_date: datetime.date | None = None,
 ):
@@ -62,7 +63,7 @@ def bot(
 
     bot_log("Goes UP")
     try:
-        crawler(browser, wait, start_date, end_date, is_booking)
+        crawler(browser, wait, start_date, end_date, is_booking, max_tickets=tickets)
     except WebDriverException as e:
         bot_log(f"WebDriverException: {type(e)}", s.BotLogLevel.CRITICAL)
         get_browser(force_reconnect=True)
