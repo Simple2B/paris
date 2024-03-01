@@ -72,24 +72,3 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_BACK }}:latest
-      - name: update compose file
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ env.DEPLOY_HOST }}
-          username: ${{ env.DEPLOY_USER_NAME }}
-          key: ${{ env.DEPLOY_SSH_KEY }}
-          source: docker-compose.staging.yaml
-          target: ${{ env.STAGING_FOLDER }}
-      - name: deploy
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ env.DEPLOY_HOST }}
-          username: ${{ env.DEPLOY_USER_NAME }}
-          key: ${{ env.DEPLOY_SSH_KEY }}
-          script: |
-            cd ${{ env.STAGING_FOLDER }} &&
-            mv docker-compose.staging.yaml docker-compose.yaml &&
-            docker-compose pull &&
-            docker-compose down &&
-            docker-compose up -d &&
-            docker system prune -f
