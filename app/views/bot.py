@@ -49,6 +49,9 @@ def index():
     for i in range(CFG.MONTHS_NEXT_SELECTOR_COUNT):
         months += [ALL_MONTHS[(month + i) % 12]]
 
+    for bot_log in bot_logs:
+        bot_log.created_at = bot_log.created_at + datetime.timedelta(hours=1)
+
     if job:
         scheduler_date = job.next_run_time.date().strftime("%m/%d/%Y")
         scheduler_time = job.next_run_time.time().strftime("%I:%M %p")
@@ -99,6 +102,13 @@ def schedule():
     if not schedule_form.validate_on_submit():
         flash(schedule_form.errors, "danger")
         return redirect(url_for("bot.index"))
+
+    # scheduled_time = datetime.time(hour = int(schedule_form.time.data.hour) + 1 % 24, minute=schedule_form.time.data.minute)
+    # if scheduled_time.hour == 0:
+    #     schedule_form.day.data = (
+    #         + datetime.timedelta(days=1)
+    #     )
+    
     log(
         log.INFO,
         "Scheduling at %s - %s: %s (%s tickets)",
@@ -113,7 +123,7 @@ def schedule():
     )
     c.add_task_booking(
         schedule_form.day.data,
-        schedule_form.time.data,
+        datetime.time(hour=abs(schedule_form.time.data.hour-1), minute=schedule_form.time.data.minute),
         booking_day=schedule_form.booking_day.data,
         tickets=schedule_form.tickets.data,
     )

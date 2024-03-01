@@ -39,7 +39,7 @@ def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
     attempts = 0
 
     while attempts < CFG.MAX_RETRY_LOGIN_COUNT:
-        browser.set_page_load_timeout(CFG.BROWSER_TIMEOUT)
+        browser.set_page_load_timeout(CFG.BROWSER_TIMEOUT_LONG)
         while True:
             try:
                 browser.get(CFG.LOGIN_PAGE_LINK)
@@ -110,7 +110,7 @@ def button_processing(
     is_booking: bool = False,
 ):
     # TODO: check network traffic
-    update_date_tickets_count(tickets_count, processing_date)
+    update_date_tickets_count(tickets_count, processing_date)   
 
     with db.begin() as session:
         ticket_date = session.scalar(

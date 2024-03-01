@@ -35,9 +35,9 @@ def start_bot(
         ids = session.scalars(
             sa.select(m.TicketDate.id).where(m.TicketDate.date < datetime.date.today())
         ).all()
-        session.execute(
-            sa.delete(m.TicketOrder).where(m.TicketTime.ticket_date_id.in_(ids))
-        )
+        # session.execute(
+        #     sa.delete(m.TicketOrder).where(m.TicketTime.ticket_date_id.in_(ids))
+        # )
         session.execute(
             sa.delete(m.TicketTime).where(m.TicketTime.ticket_date_id.in_(ids))
         )

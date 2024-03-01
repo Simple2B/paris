@@ -62,7 +62,7 @@ class BaseConfig(BaseSettings):
     BROWSER_URL: str = ""
     SELENIUM_VNC_WIDTH: str = "1024"
     SELENIUM_VNC_HEIGHT: str = "768"
-    BROWSER_TIMEOUT: float = 4
+    BROWSER_TIMEOUT: float = 6
     BROWSER_TIMEOUT_SHORT: float = 2
     BROWSER_TIMEOUT_LONG: float = 10
     CHROME_DOCKER_CONTAINER_NAME: str

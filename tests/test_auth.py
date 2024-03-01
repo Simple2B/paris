@@ -45,7 +45,7 @@ def test_forgot(client):
             b"Password reset successful. For set new password please check your e-mail."
             in response.data
         )
-        user: m.User = db.session.scalar(
+        user = db.session.scalar(
             m.User.select().where(m.User.email == TEST_EMAIL)
         )
         assert user
