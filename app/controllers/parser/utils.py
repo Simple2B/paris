@@ -43,6 +43,7 @@ def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
         while True:
             try:
                 browser.get(CFG.LOGIN_PAGE_LINK)
+                log(log.INFO, "Logging in, waited for page to load")
                 break
             except TimeoutException:
                 bot_log("Page load timeout", s.BotLogLevel.WARNING)
@@ -57,13 +58,13 @@ def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
         # except TimeoutException:
         #     bot_log("Session login expired. Logging in again", s.BotLogLevel.INFO)
         try:
-            identify_input = wait.until(
-                EC.presence_of_element_located((By.ID, "userId"))
+            log(log.INFO, "Logging in, sending keys")
+            wait.until(EC.presence_of_element_located((By.ID, "userId"))).send_keys(
+                CFG.TTP_IDENTIFICATOR
             )
-            password_input = browser.find_element(By.ID, "loginPassword")
-
-            identify_input.send_keys(CFG.TTP_IDENTIFICATOR)
-            password_input.send_keys(CFG.TTP_PASSWORD)
+            wait.until(
+                EC.presence_of_element_located((By.ID, "loginPassword"))
+            ).send_keys(CFG.TTP_PASSWORD)
 
             login_button = wait.until(
                 EC.presence_of_element_located((By.ID, "log_to_b2b"))
@@ -109,7 +110,6 @@ def button_processing(
     floor: s.Floor,
     is_booking: bool = False,
 ):
-    # TODO: check network traffic
     update_date_tickets_count(tickets_count, processing_date)
 
     with db.begin() as session:

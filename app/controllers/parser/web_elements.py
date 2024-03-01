@@ -40,9 +40,11 @@ def click_continue(browser: Chrome, wait: WebDriverWait) -> None:
             (By.XPATH, '//*[@id="te-funnel-composition"]/div/div[4]/div/div/button')
         )
     )
-    browser.execute_script('arguments[0].removeAttribute("disabled")', button_next)
-    browser.execute_script("arguments[0].click();", button_next)
-
+    try:
+        browser.execute_script('arguments[0].removeAttribute("disabled")', button_next)
+        browser.execute_script("arguments[0].click();", button_next)
+    except StaleElementReferenceException:
+        click_continue(browser, wait)
 
 @check_canceled
 def click_new_choice(wait: WebDriverWait):
