@@ -42,7 +42,6 @@ def logout():
 @auth_blueprint.route("/activated/<reset_password_uid>")
 @login_required
 def activate(reset_password_uid):
-    current_user: m.User = current_user
     if not current_user or not current_user.is_authenticated:
         log(log.WARNING, "Authentication error")
 

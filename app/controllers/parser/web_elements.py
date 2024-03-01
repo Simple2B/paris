@@ -46,6 +46,7 @@ def click_continue(browser: Chrome, wait: WebDriverWait) -> None:
     except StaleElementReferenceException:
         click_continue(browser, wait)
 
+
 @check_canceled
 def click_new_choice(wait: WebDriverWait):
     """Clicks on 'New choice' button"""
