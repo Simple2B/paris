@@ -70,7 +70,7 @@ def index():
             bot=c.get_bot(),
             bot_logs=bot_logs,
             page=pagination,
-            scheduler_date=scheduler_date,
+            scheduler_date=job.next_run_time.date().strftime("%m/%d/%Y"),
             scheduler_time=scheduler_time,
             scheduler_day=scheduler_day,
             months=months,
