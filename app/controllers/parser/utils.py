@@ -72,6 +72,7 @@ def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
             try_click(login_button, browser)
             try:
                 wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
+                log(log.INFO, "Got to main page after login")
             except TimeoutException:
                 bot_log(
                     f"Login failed. Rerunning [{attempts + 1}] ...",
@@ -84,6 +85,7 @@ def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
             bot_log("Element absent, possibly session login occur", s.BotLogLevel.INFO)
         try:
             wait.until(EC.url_to_be(CFG.MAIN_PAGE_LINK))
+            log(log.INFO, "Session login successful (via url)")
             break
         except TimeoutException:
             bot_log(

@@ -54,7 +54,14 @@ def index():
 
     if job:
         scheduler_date = job.next_run_time.date().strftime("%m/%d/%Y")
-        scheduler_time = job.next_run_time.time().strftime("%I:%M %p")
+        time_data = job.next_run_time.time()
+        scheduler_date = datetime.datetime.strptime(
+            f"{scheduler_date} {time_data.hour}:{time_data.minute}",
+            "%m/%d/%Y %H:%M",
+        )
+        scheduler_date = scheduler_date + datetime.timedelta(hours=1)
+        scheduler_date = time_data.strftime("%m/%d/%Y")
+        scheduler_time = time_data.strftime("%I:%M %p")
 
         scheduler_day = job.args[2].strftime("%m/%d/%Y")
 
@@ -117,7 +124,10 @@ def schedule():
     )
     c.add_task_booking(
         schedule_form.day.data,
-        datetime.time(hour=abs(schedule_form.time.data.hour-1), minute=schedule_form.time.data.minute),
+        datetime.time(
+            hour=abs(schedule_form.time.data.hour - 1),
+            minute=schedule_form.time.data.minute,
+        ),
         booking_day=schedule_form.booking_day.data,
         tickets=schedule_form.tickets.data,
     )
