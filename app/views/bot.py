@@ -103,12 +103,6 @@ def schedule():
         flash(schedule_form.errors, "danger")
         return redirect(url_for("bot.index"))
 
-    # scheduled_time = datetime.time(hour = int(schedule_form.time.data.hour) + 1 % 24, minute=schedule_form.time.data.minute)
-    # if scheduled_time.hour == 0:
-    #     schedule_form.day.data = (
-    #         + datetime.timedelta(days=1)
-    #     )
-    
     log(
         log.INFO,
         "Scheduling at %s - %s: %s (%s tickets)",

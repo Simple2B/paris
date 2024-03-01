@@ -110,7 +110,7 @@ def button_processing(
     is_booking: bool = False,
 ):
     # TODO: check network traffic
-    update_date_tickets_count(tickets_count, processing_date)   
+    update_date_tickets_count(tickets_count, processing_date)
 
     with db.begin() as session:
         ticket_date = session.scalar(
