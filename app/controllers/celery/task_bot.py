@@ -62,12 +62,22 @@ def bot(
     browser.switch_to.window(browser.window_handles[0])
 
     bot_log("Goes UP")
-    try:
-        crawler(browser, wait, start_date=start_date, end_date=end_date, is_booking=is_booking, max_tickets=tickets)
-    except WebDriverException as e:
-        bot_log(f"WebDriverException: {type(e)}", s.BotLogLevel.CRITICAL)
-        get_browser(force_reconnect=True)
-        # c.reset_bot()
+    while True:
+        try:
+            crawler(
+                browser,
+                wait,
+                start_date=start_date,
+                end_date=end_date,
+                is_booking=is_booking,
+                max_tickets=tickets,
+            )
+            break
+        except WebDriverException as e:
+            bot_log(f"WebDriverException: {type(e)}", s.BotLogLevel.CRITICAL)
+            get_browser(force_reconnect=False)
+            bot_log("Reconnecting browser...")
+            # c.reset_bot()
 
     bot_log("Goes DOWN")
 
