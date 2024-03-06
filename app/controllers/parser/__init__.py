@@ -6,6 +6,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver import Chrome
 from selenium.common.exceptions import (
     TimeoutException,
+    StaleElementReferenceException,
 )
 
 from app.logger import log
@@ -81,7 +82,10 @@ def crawler(
 
                 bot_log(f"Processing date: {processing_date}")
                 tickets_count = get_tickets(
-                    max_tickets, browser, wait, processing_date.day,
+                    max_tickets,
+                    browser,
+                    wait,
+                    processing_date.day,
                 )
                 while tickets_count > 0:
                     try:
@@ -144,16 +148,22 @@ def crawler(
                             try_click(minus_button[0], browser)
                             tickets_count -= 1
                             continue
-
-                        button_processing(
-                            buttons_xpath,
-                            wait,
-                            browser,
-                            tickets_count,
-                            processing_date,
-                            s.Floor.SECOND,
-                            is_booking,
-                        )
+                        try:
+                            button_processing(
+                                buttons_xpath,
+                                wait,
+                                browser,
+                                tickets_count,
+                                processing_date,
+                                s.Floor.SECOND,
+                                is_booking,
+                            )
+                        except StaleElementReferenceException:
+                            log(log.INFO, "StaleElementReferenceException (2 floor)")
+                            break
+                    except StaleElementReferenceException:
+                        log(log.INFO, "StaleElementReferenceException (1 floor)")
+                        break
                     get_to_month(browser, wait, month_button_clicks)
                     break
                 processing_date, new_month_flag = day_increment(processing_date)

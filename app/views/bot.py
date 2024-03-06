@@ -60,8 +60,8 @@ def index():
             "%m/%d/%Y %H:%M",
         )
         scheduler_date = scheduler_date + datetime.timedelta(hours=1)
+        scheduler_time = scheduler_date.strftime("%I:%M %p")
         scheduler_date = time_data.strftime("%m/%d/%Y")
-        scheduler_time = time_data.strftime("%I:%M %p")
 
         scheduler_day = job.args[2].strftime("%m/%d/%Y")
 
