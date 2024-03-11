@@ -77,6 +77,8 @@ class BaseConfig(BaseSettings):
     MAX_RETRY_LOGIN_COUNT = 5
     BROWSER_RECONNECT_TIMEOUT = 10
 
+    BOOKING_TIME_OFFSET: int = 5
+
     # Scheduler
     EVENING_START_HOUR: int = 18
     EVENING_START_MINUTE: int = 0
@@ -84,6 +86,7 @@ class BaseConfig(BaseSettings):
     MORNING_START_MINUTE: int = 0
     BOOKING_JOB_NAME: str = "booking"
     MONTHS_NEXT_SELECTOR_COUNT: int = 6
+    MINUTES_BEFORE_BOOKING: int = 3
 
     @staticmethod
     def configure(app: Flask):

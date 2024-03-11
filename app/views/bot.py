@@ -59,7 +59,7 @@ def index():
             f"{scheduler_date} {time_data.hour}:{time_data.minute}",
             "%m/%d/%Y %H:%M",
         )
-        scheduler_date = scheduler_date + datetime.timedelta(hours=1)
+        scheduler_date = scheduler_date + datetime.timedelta(hours=2)
         scheduler_time = scheduler_date.strftime("%I:%M %p")
         scheduler_date = time_data.strftime("%m/%d/%Y")
 

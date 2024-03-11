@@ -1,4 +1,5 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
+from time import sleep
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -40,6 +41,7 @@ def crawler(
     end_date: date | None,
     is_booking: bool = True,
     max_tickets: int = CFG.TICKETS_PER_DAY,
+    start_time: datetime | None = None,
 ):
     """Main function of crawler. Crawls through all available dates and collects info about tickets.
 
@@ -63,6 +65,17 @@ def crawler(
             - date.today().month
             + 12 * (processing_date.year - date.today().year)
         )
+
+        if is_booking:
+            bot_log("Login successful, waiting for booking time")
+            sleep(
+                (
+                    start_time
+                    + timedelta(minutes=CFG.MINUTES_BEFORE_BOOKING)
+                    - datetime.now()
+                ).total_seconds()
+            )
+            bot_log("Booking process started")
 
         while processing_date < end_date:
             get_to_month(browser, wait, month_button_clicks)

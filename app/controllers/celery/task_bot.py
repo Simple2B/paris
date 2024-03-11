@@ -30,6 +30,8 @@ def bot(
     tickets: int = cfg.TICKETS_PER_DAY,
 ):
     """Init bot"""
+    start_time = datetime.datetime.now()
+
     from selenium.webdriver.support.wait import WebDriverWait
     from app.controllers.parser import crawler
     from app.controllers.selenium import get_browser
@@ -71,6 +73,7 @@ def bot(
                 end_date=end_date,
                 is_booking=is_booking,
                 max_tickets=tickets,
+                start_time=start_time,
             )
             break
         except WebDriverException as e:
