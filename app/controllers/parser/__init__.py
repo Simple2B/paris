@@ -91,6 +91,12 @@ def crawler(
                             - date.today().month
                             + 12 * (processing_date.year - date.today().year)
                         )
+                        log(
+                            log.INFO,
+                            "Month button clicks: %i, %s",
+                            month_button_clicks,
+                            processing_date,
+                        )
                         break
                     continue
 

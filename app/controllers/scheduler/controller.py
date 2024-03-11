@@ -34,12 +34,15 @@ def add_task_booking(
     elif booking_day:
         start_date = booking_day
 
-        hour = time.hour if time.hour > 1 else 24
         time = datetime.time(
-            hour=hour - 1 if time.minute < CFG.MINUTES_BEFORE_BOOKING else hour,
-            minute=time.minute - CFG.MINUTES_BEFORE_BOOKING
-            if time.minute > CFG.MINUTES_BEFORE_BOOKING
-            else 60 - CFG.MINUTES_BEFORE_BOOKING,
+            hour=(
+                datetime.datetime(2000, 1, 1, time.hour, time.minute, 0, 0)
+                - datetime.timedelta(minutes=CFG.MINUTES_BEFORE_BOOKING)
+            ).hour,
+            minute=(
+                datetime.datetime(2000, 1, 1, time.hour, time.minute, 0, 0)
+                - datetime.timedelta(minutes=CFG.MINUTES_BEFORE_BOOKING)
+            ).minute,
         )
 
         args = [True, start_date, start_date + datetime.timedelta(days=1), tickets]

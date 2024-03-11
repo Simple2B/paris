@@ -63,7 +63,7 @@ def index():
         scheduler_time = scheduler_date.strftime("%I:%M %p")
         scheduler_date = time_data.strftime("%m/%d/%Y")
 
-        scheduler_day = job.args[2].strftime("%m/%d/%Y")
+        scheduler_day = job.args[1].strftime("%m/%d/%Y")
 
         return render_template(
             "bot/index.html",
