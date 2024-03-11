@@ -28,9 +28,16 @@ def bot(
     start_date: datetime.date | None = None,
     end_date: datetime.date | None = None,
     tickets: int = cfg.TICKETS_PER_DAY,
+    start_time: datetime.time | None = None,
 ):
     """Init bot"""
-    start_time = datetime.datetime.now()
+    start_time = (
+        datetime.time(
+            minute=datetime.datetime.now().minute, hour=datetime.datetime.now().hour
+        )
+        if not start_time
+        else start_time
+    )
 
     from selenium.webdriver.support.wait import WebDriverWait
     from app.controllers.parser import crawler

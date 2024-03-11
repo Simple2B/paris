@@ -3,13 +3,13 @@ import datetime
 import sqlalchemy as sa
 from flask import flash
 
-from app import models as m
 from app import db
+from app import models as m
 from app import schema as s
 from app.logger import log
+from config import config
 
 from .celery.task_bot import bot as bot_task
-from config import config
 
 CFG = config()
 
@@ -19,6 +19,7 @@ def start_bot(
     start_date: datetime.date | None = None,
     end_date: datetime.date | None = None,
     tickets: int = CFG.TICKETS_PER_DAY,
+    start_time: datetime.time | None = None,
 ):
     log(log.INFO, "BOT: Start")
     with db.begin() as session:
@@ -54,7 +55,7 @@ def start_bot(
     with db.begin() as session:
         bot = session.scalar(sa.select(m.Bot))
         assert bot
-        task = bot_task.delay(is_booking, start_date, end_date, tickets)
+        task = bot_task.delay(is_booking, start_date, end_date, tickets, start_time)
         bot.task_id = task.id
 
 

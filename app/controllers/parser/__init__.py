@@ -1,4 +1,4 @@
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta, datetime, time
 from time import sleep
 
 from selenium.webdriver.common.by import By
@@ -41,7 +41,7 @@ def crawler(
     end_date: date | None,
     is_booking: bool = True,
     max_tickets: int = CFG.TICKETS_PER_DAY,
-    start_time: datetime | None = None,
+    start_time: time | None = None,
 ):
     """Main function of crawler. Crawls through all available dates and collects info about tickets.
 
@@ -69,11 +69,18 @@ def crawler(
         if is_booking:
             assert start_time
             bot_log("Login successful, waiting for booking time")
+            dtnow = datetime.now()
             sleep(
                 (
-                    start_time
+                    datetime(
+                        dtnow.year,
+                        dtnow.month,
+                        dtnow.day,
+                        start_time.hour,
+                        start_time.minute,
+                    )
                     + timedelta(minutes=CFG.MINUTES_BEFORE_BOOKING)
-                    - datetime.now()
+                    - dtnow
                 ).total_seconds()
             )
             bot_log("Booking process started")

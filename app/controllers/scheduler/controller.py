@@ -33,6 +33,7 @@ def add_task_booking(
 
     elif booking_day:
         start_date = booking_day
+        start_time = time
 
         time = datetime.time(
             hour=(
@@ -45,7 +46,13 @@ def add_task_booking(
             ).minute,
         )
 
-        args = [True, start_date, start_date + datetime.timedelta(days=1), tickets]
+        args = [
+            True,
+            start_date,
+            start_date + datetime.timedelta(days=1),
+            tickets,
+            start_time,
+        ]
         log(log.INFO, "Booking job added at %s - %s: %s", date, time, booking_day)
 
     else:
