@@ -67,6 +67,7 @@ def crawler(
         )
 
         if is_booking:
+            assert start_time
             bot_log("Login successful, waiting for booking time")
             sleep(
                 (
