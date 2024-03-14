@@ -69,6 +69,7 @@ def bot(
     bot_log("Goes UP")
     while True:
         try:
+            browser.refresh()
             sign_in(browser, wait)
             click_new_choice(wait)
             if is_booking:

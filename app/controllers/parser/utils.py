@@ -44,6 +44,7 @@ def sign_in(browser: Chrome, wait: WebDriverWait) -> bool:
         while True:
             try:
                 browser.get(CFG.LOGIN_PAGE_LINK)
+                wait_for_page_to_load(browser)
                 log(log.INFO, "Logging in, waited for page to load")
                 break
             except TimeoutException:
@@ -340,6 +341,7 @@ def wait_until_start(start_time: datetime.time, browser: Chrome, wait: WebDriver
     assert browser.current_url == CFG.NEW_ORDERS_LINK
     bot_log("Login successful, waiting for booking time")
     dtnow = datetime.datetime.now()
+    log(log.INFO, "Current time: %s, start time - %s", dtnow, start_time)
     time_to_sleep = (
         datetime.datetime(
             dtnow.year,
@@ -347,6 +349,7 @@ def wait_until_start(start_time: datetime.time, browser: Chrome, wait: WebDriver
             dtnow.day,
             start_time.hour,
             start_time.minute,
+            0,
         )
         - dtnow
     ).total_seconds()
