@@ -10,6 +10,7 @@ from selenium.common.exceptions import (
     StaleElementReferenceException,
 )
 
+
 from app.logger import log
 from app import schema as s
 from config import config
@@ -18,6 +19,7 @@ from .web_elements import (
     click_new_choice,
     click_continue,
     get_to_month,
+    wait_for_page_to_load,
 )
 from .utils import (
     sign_in,
@@ -28,7 +30,6 @@ from .utils import (
     button_processing,
 )
 from .exceptions import ParserCanceled, ParserError
-from .tickets import date_ticket_exist, update_date_tickets_count
 from .bot_log import bot_log
 
 CFG = config()
@@ -68,44 +69,51 @@ def crawler(
 
         if is_booking:
             assert start_time
+            assert browser.current_url == CFG.NEW_ORDERS_LINK
             bot_log("Login successful, waiting for booking time")
             dtnow = datetime.now()
-            sleep(
-                (
-                    datetime(
-                        dtnow.year,
-                        dtnow.month,
-                        dtnow.day,
-                        start_time.hour,
-                        start_time.minute,
-                    )
-                    + timedelta(minutes=CFG.MINUTES_BEFORE_BOOKING)
-                    - dtnow
-                ).total_seconds()
-            )
+            time_to_sleep = (
+                datetime(
+                    dtnow.year,
+                    dtnow.month,
+                    dtnow.day,
+                    start_time.hour,
+                    start_time.minute,
+                )
+                - dtnow
+            ).total_seconds()
+            log(log.INFO, "Time to sleep: %i", time_to_sleep)
+            sleep(time_to_sleep)
             bot_log("Booking process started")
 
         while processing_date < end_date:
             get_to_month(browser, wait, month_button_clicks)
             while True:
                 if not get_date_info(browser, wait, processing_date.day):
-                    if date_ticket_exist(processing_date):
-                        update_date_tickets_count(0, processing_date)
-                    processing_date, new_month_flag = day_increment(processing_date)
-                    if new_month_flag or processing_date >= end_date:
-                        month_button_clicks = (
-                            processing_date.month
-                            - date.today().month
-                            + 12 * (processing_date.year - date.today().year)
-                        )
-                        log(
-                            log.INFO,
-                            "Month button clicks: %i, %s",
-                            month_button_clicks,
-                            processing_date,
-                        )
-                        break
-                    continue
+                    for _ in range(50):
+                        browser.refresh()
+                        wait_for_page_to_load(browser)
+                        get_to_month(browser, wait, month_button_clicks)
+                        if get_date_info(browser, wait, processing_date.day):
+                            break
+                    else:
+                        # if date_ticket_exist(processing_date):
+                        #     update_date_tickets_count(0, processing_date)
+                        processing_date, new_month_flag = day_increment(processing_date)
+                        if new_month_flag or processing_date >= end_date:
+                            month_button_clicks = (
+                                processing_date.month
+                                - date.today().month
+                                + 12 * (processing_date.year - date.today().year)
+                            )
+                            log(
+                                log.INFO,
+                                "Month button clicks: %i, %s",
+                                month_button_clicks,
+                                processing_date,
+                            )
+                            break
+                        continue
 
                 bot_log(f"Processing date: {processing_date}")
                 tickets_count = get_tickets(
