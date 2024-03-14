@@ -1,28 +1,29 @@
 import datetime
 import time
+from time import sleep
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import (
     TimeoutException,
 )
 from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
-from app.logger import log
+from app import db
 from app import models as m
 from app import schema as s
-from app import db
+from app.logger import log
 from config import config
+
+from .bot_log import bot_log
+from .exceptions import check_canceled
+from .tickets import update_date_tickets_count, update_ticket_time
 from .web_elements import (
-    try_click,
     click_new_choice,
+    try_click,
     wait_for_page_to_load,
 )
-from .tickets import update_date_tickets_count, update_ticket_time
-from .exceptions import check_canceled
-from .bot_log import bot_log
-
 
 CFG = config()
 
@@ -331,3 +332,24 @@ def day_increment(processing_date: datetime.date) -> tuple[datetime.date, bool]:
         bot_log("No available dates for current month", s.BotLogLevel.WARNING)
         return (processing_date, True)
     return (processing_date, False)
+
+
+@check_canceled
+def wait_until_start(start_time: datetime.time, browser: Chrome, wait: WebDriverWait):
+    assert start_time
+    assert browser.current_url == CFG.NEW_ORDERS_LINK
+    bot_log("Login successful, waiting for booking time")
+    dtnow = datetime.datetime.now()
+    time_to_sleep = (
+        datetime.datetime(
+            dtnow.year,
+            dtnow.month,
+            dtnow.day,
+            start_time.hour,
+            start_time.minute,
+        )
+        - dtnow
+    ).total_seconds()
+    log(log.INFO, "Time to sleep: %i", time_to_sleep)
+    sleep(time_to_sleep)
+    bot_log("Booking process started")
