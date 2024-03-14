@@ -18,13 +18,6 @@ cfg = config()
 
 
 @celery.task
-def add(x: int, y: int) -> int:
-    """Add two numbers"""
-    log(log.INFO, "Add [%s] + [%s], task", x, y)
-    return x + y
-
-
-@celery.task
 def bot(
     is_booking: bool,
     start_date: datetime.date | None = None,
