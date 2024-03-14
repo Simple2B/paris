@@ -1,25 +1,20 @@
 import datetime
 
 import sqlalchemy as sa
-
-from .celery_flask import celery_app as celery
-from app import models as m
-from app import db
-from app import schema as s
-from config import config
-from app.logger import log
-from app.controllers.parser.bot_log import bot_log
-
 from selenium.common.exceptions import InvalidSessionIdException
 
+from app import db
+from app import models as m
+from app import schema as s
+from app.controllers.parser.web_elements import click_new_choice
+from app.controllers.parser.bot_log import bot_log
+from app.controllers.parser.utils import wait_until_start, sign_in
+from app.logger import log
+from config import config
+
+from .celery_flask import celery_app as celery
+
 cfg = config()
-
-
-@celery.task
-def add(x: int, y: int) -> int:
-    """Add two numbers"""
-    log(log.INFO, "Add [%s] + [%s], task", x, y)
-    return x + y
 
 
 @celery.task
@@ -39,10 +34,11 @@ def bot(
         else start_time
     )
 
+    from selenium.common.exceptions import WebDriverException
     from selenium.webdriver.support.wait import WebDriverWait
+
     from app.controllers.parser import crawler
     from app.controllers.selenium import get_browser
-    from selenium.common.exceptions import WebDriverException
 
     browser = get_browser()
     assert browser
@@ -73,6 +69,11 @@ def bot(
     bot_log("Goes UP")
     while True:
         try:
+            sign_in(browser, wait)
+            click_new_choice(wait)
+            if is_booking:
+                wait_until_start(start_time, browser, wait)
+
             crawler(
                 browser,
                 wait,

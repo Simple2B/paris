@@ -1,36 +1,33 @@
-from datetime import date, timedelta, datetime, time
-from time import sleep
+from datetime import date, time, timedelta
 
+from selenium.common.exceptions import (
+    StaleElementReferenceException,
+    TimeoutException,
+)
+from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver import Chrome
-from selenium.common.exceptions import (
-    TimeoutException,
-    StaleElementReferenceException,
-)
 
-
-from app.logger import log
 from app import schema as s
+from app.logger import log
 from config import config
-from .web_elements import (
-    try_click,
-    click_new_choice,
-    click_continue,
-    get_to_month,
-    wait_for_page_to_load,
-)
+
+from .bot_log import bot_log
+from .exceptions import ParserCanceled, ParserError
 from .utils import (
-    sign_in,
+    button_processing,
+    day_increment,
+    get_date_info,
     get_tickets,
     restart_process,
-    get_date_info,
-    day_increment,
-    button_processing,
 )
-from .exceptions import ParserCanceled, ParserError
-from .bot_log import bot_log
+from .web_elements import (
+    click_continue,
+    get_to_month,
+    try_click,
+    wait_for_page_to_load,
+)
 
 CFG = config()
 
@@ -51,9 +48,6 @@ def crawler(
         wait (WebDriverWait): instance of webDriverWait
     """
     try:
-        sign_in(browser, wait)
-        click_new_choice(wait)
-
         processing_date = start_date if start_date else date.today()
         end_date = (
             end_date
@@ -66,25 +60,6 @@ def crawler(
             - date.today().month
             + 12 * (processing_date.year - date.today().year)
         )
-
-        if is_booking:
-            assert start_time
-            assert browser.current_url == CFG.NEW_ORDERS_LINK
-            bot_log("Login successful, waiting for booking time")
-            dtnow = datetime.now()
-            time_to_sleep = (
-                datetime(
-                    dtnow.year,
-                    dtnow.month,
-                    dtnow.day,
-                    start_time.hour,
-                    start_time.minute,
-                )
-                - dtnow
-            ).total_seconds()
-            log(log.INFO, "Time to sleep: %i", time_to_sleep)
-            sleep(time_to_sleep)
-            bot_log("Booking process started")
 
         while processing_date < end_date:
             get_to_month(browser, wait, month_button_clicks)
