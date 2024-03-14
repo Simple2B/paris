@@ -1,7 +1,10 @@
 import datetime
 
 import sqlalchemy as sa
-from selenium.common.exceptions import InvalidSessionIdException
+from selenium.common.exceptions import (
+    InvalidSessionIdException,
+    StaleElementReferenceException,
+)
 
 from app import db
 from app import models as m
@@ -11,6 +14,7 @@ from app.controllers.parser.bot_log import bot_log
 from app.controllers.parser.utils import wait_until_start, sign_in
 from app.logger import log
 from config import config
+
 
 from .celery_flask import celery_app as celery
 
@@ -87,6 +91,8 @@ def bot(
             break
         except WebDriverException as e:
             bot_log(f"WebDriverException: {type(e)}", s.BotLogLevel.CRITICAL)
+            if type(e) == StaleElementReferenceException:
+                break
             get_browser(force_reconnect=False)
             bot_log("Reconnecting browser...")
             # c.reset_bot()
