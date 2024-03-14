@@ -1,4 +1,5 @@
 from datetime import date, time, timedelta
+from time import sleep
 
 from selenium.common.exceptions import (
     StaleElementReferenceException,
@@ -67,6 +68,7 @@ def crawler(
                 if not get_date_info(browser, wait, processing_date.day):
                     for _ in range(50):
                         browser.refresh()
+                        sleep(2)
                         wait_for_page_to_load(browser)
                         get_to_month(browser, wait, month_button_clicks)
                         if get_date_info(browser, wait, processing_date.day):
